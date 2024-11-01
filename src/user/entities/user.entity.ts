@@ -4,7 +4,12 @@ export enum UserRole {
   MOTORISTA = 'motorista',
 }
 
-@Entity()
+export enum UserType {
+  TERCEIRIZADO = 'terceirizado',
+  EFETIVADO = 'efetivado',
+}
+
+@Entity('usuario')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,7 +26,7 @@ export class User {
   @Column({ length: 100, unique: true })
   email: string;
 
-  @Column()
+  @Column({ name: 'data_adm' })
   dataAdmissao: Date;
 
   @Column({ default: true })
@@ -30,18 +35,22 @@ export class User {
   @Column({ length: 100 })
   obra: string;
 
-  @Column()
-  funcao: number;
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.MOTORISTA,
+  })
+  cargo: UserRole;
 
   @Column({ length: 20, unique: true })
   cnh: string;
 
   @Column({
     type: 'enum',
-    enum: UserRole,
-    default: UserRole.MOTORISTA,
+    enum: UserType,
+    default: UserType.EFETIVADO,
   })
-  tipo: UserRole;
+  tipo: UserType;
 
   @Column({ nullable: true })
   senha: string;

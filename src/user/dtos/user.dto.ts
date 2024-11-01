@@ -5,15 +5,18 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsNumberString,
+  IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { AuthService } from 'src/auth/auth.service';
-import { User, UserRole } from '../entities/user.entity';
+import { User, UserRole, UserType } from '../entities/user.entity';
 
 export class UserDTO {
-  @IsNumberString()
+  @Type(() => Number)
+  @IsNumber()
   matricula: number;
 
   @IsString()
@@ -38,17 +41,21 @@ export class UserDTO {
   @IsNotEmpty()
   obra: string;
 
-  @IsNumberString()
-  funcao: number;
+  @IsOptional()
+  @IsEnum(UserRole)
+  cargo: UserRole = UserRole.MOTORISTA;
 
-  @IsNumberString()
+  @Type(() => Number)
+  @IsNumber()
   cnh: string;
 
-  @IsEnum(UserRole)
-  tipo: UserRole;
+  @IsOptional()
+  @IsEnum(UserType)
+  tipo: UserType = UserType.EFETIVADO;
 
+  @IsOptional()
   @IsString()
-  senha: string;
+  senha: string = 'senha';
 
   toEntity() {
     const entity = new User();
@@ -59,7 +66,7 @@ export class UserDTO {
     entity.dataAdmissao = this.dataAdmissao;
     entity.status = this.status;
     entity.obra = this.obra;
-    entity.funcao = this.funcao;
+    entity.cargo = this.cargo;
     entity.cnh = this.cnh;
     entity.tipo = this.tipo;
     entity.senha = AuthService.encrypt(this.senha);
