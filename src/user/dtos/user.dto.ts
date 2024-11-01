@@ -1,4 +1,3 @@
-import * as bcrypt from 'bcrypt';
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -10,7 +9,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { userConstants } from '../constants';
+import { AuthService } from 'src/auth/auth.service';
 import { User, UserRole } from '../entities/user.entity';
 
 export class UserDTO {
@@ -51,7 +50,7 @@ export class UserDTO {
   @IsString()
   senha: string;
 
-  async toEntity() {
+  toEntity() {
     const entity = new User();
     entity.matricula = this.matricula;
     entity.nome = this.nome;
@@ -63,7 +62,7 @@ export class UserDTO {
     entity.funcao = this.funcao;
     entity.cnh = this.cnh;
     entity.tipo = this.tipo;
-    entity.senha = await bcrypt.hash(this.senha, userConstants.salt);
+    entity.senha = AuthService.encrypt(this.senha);
 
     return entity;
   }

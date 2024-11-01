@@ -16,7 +16,7 @@ export class UserController {
   @Post()
   async create(@Body() user: UserDTO, @Res() res: Response) {
     try {
-      const result = await this.service.create(await user.toEntity());
+      const result = await this.service.create(user.toEntity());
       res.status(HttpStatus.CREATED).json(result);
     } catch (e) {
       res.status(HttpStatus.CONFLICT).send(e.message);
