@@ -14,8 +14,8 @@ export class UserService {
     return this.repository.find();
   }
 
-  findOne(id: number): Promise<User | null> {
-    return this.repository.findOneBy({ id });
+  findOne(cpf: string): Promise<User | null> {
+    return this.repository.findOneBy({ cpf });
   }
 
   async delete(id: number): Promise<void> {
