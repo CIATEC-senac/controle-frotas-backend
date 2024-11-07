@@ -35,8 +35,7 @@ export class VeiculoService {
         );
     }
 
-
-    
+ 
 
 
 }
