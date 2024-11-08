@@ -20,11 +20,11 @@ export class VeiculoDTO {
 
     @Type (()=> Number)
     @IsNumber()
-    capacidade: string;
+    capacidade: Number;
 
     @Type (()=> Number)
     @IsNumber()
-    ano: string;
+    ano: Number;
 
   @IsCarPlate()
    placa: string;

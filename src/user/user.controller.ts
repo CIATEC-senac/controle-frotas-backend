@@ -22,4 +22,5 @@ export class UserController {
       res.status(HttpStatus.CONFLICT).send(e.message);
     }
   }
+
 }

@@ -28,10 +28,10 @@ export class Veiculo {
     status: boolean;
 
     @Column ({length: 3})
-    capacidade: string;
+    capacidade: Number;
 
     @Column ({length: 4})
-    ano: string;
+    ano: Number;
 
     @Column({ length: 100 })
     obra: string;
