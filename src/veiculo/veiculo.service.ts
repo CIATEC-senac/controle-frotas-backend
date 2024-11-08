@@ -43,7 +43,7 @@ export class VeiculoService {
         const constroiVeiculosAleatorio =(): Veiculo => {
             const veiculo = new Veiculo ();
 
-            veiculo.empresa = String (constroiVeiculos(alfabeto, 10, 10));
+            veiculo.empresa = String (constroiVeiculos(alfabeto, 10, 15));
             veiculo.capacidade = Number(constroiVeiculos(numerais, 1, 3));
             veiculo.ano = Number (constroiVeiculos(numerais, 4, 4));
             veiculo.obra = constroiVeiculos(alfabeto, 1, 100);
