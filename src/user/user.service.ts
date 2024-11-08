@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InsertResult, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { AuthService } from 'src/auth/auth.service';
+import { Repository } from 'typeorm';
+import { User, UserRole, UserType } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -9,19 +10,56 @@ export class UserService {
     @InjectRepository(User)
     private repository: Repository<User>,
   ) {}
-  
 
   findAll(): Promise<User[]> {
     return this.repository.find();
   }
 
-
+  //Popular o banco de dados com 1000 usuários com valores aleatorios
   async seed() {
     console.log('seed começo');
-    const users = [
-      { name: 'João Silva', cpf: '12345678900', email: 'joao@blavbla.com' },
-      
-    ];
+
+    const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    const numerais = '0123456789';
+
+    const constroiAleatorio = (dados: string, min: number, max: number) => {
+      const lista = dados.split('');
+      const tamanho = Math.floor(Math.random() * (max - min)) + min;
+
+      let valor = '';
+
+      for (let i = 0; i < tamanho; i++) {
+        const randomChar = Math.floor(Math.random() * lista.length);
+        valor += lista[randomChar];
+      }
+
+      return valor;
+    };
+
+    const constroiUsuarioAleatorio = (): User => {
+      const user = new User();
+
+      user.matricula = Number(constroiAleatorio(numerais, 5, 5));
+      user.nome = constroiAleatorio(alfabeto, 5, 10);
+      user.cpf = constroiAleatorio(numerais, 11, 11);
+      user.email = `${constroiAleatorio(alfabeto, 10, 15)}@gmail.com`;
+      user.dataAdmissao = new Date();
+      user.status = true;
+      user.obra = constroiAleatorio(alfabeto, 1, 100);
+      user.cargo = UserRole.MOTORISTA;
+      user.cnh = constroiAleatorio(numerais, 11, 11);
+      user.tipo = UserType.EFETIVADO;
+      user.senha = AuthService.encrypt('senha');
+
+      return user;
+    };
+
+    for (let i = 0; i <= 1000; i++) {
+      await this.create(constroiUsuarioAleatorio()).catch((e) =>
+        console.log('erro ao inserir usuario', i),
+      );
+    }
   }
 
   findOne(cpf: string): Promise<User | null> {
@@ -32,8 +70,8 @@ export class UserService {
     await this.repository.delete(id);
   }
 
-  create(user: User): Promise<InsertResult> {
-    return this.repository.insert(user);
+  create(user: User): Promise<User> {
+    return this.repository.save(user);
   }
 
   update(user: User) {
@@ -44,9 +82,4 @@ export class UserService {
       user,
     );
   }
-
 }
-
-
-
-

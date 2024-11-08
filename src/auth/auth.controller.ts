@@ -9,6 +9,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: SignInDTO) {
-    return this.authService.signIn(signInDto.cpf, signInDto.senha);
+    return this.authService
+      .signIn(signInDto.cpf, signInDto.senha)
+      .catch((e) => {
+        console.log(e);
+        return e;
+      });
   }
 }
