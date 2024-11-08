@@ -9,9 +9,19 @@ export class UserService {
     @InjectRepository(User)
     private repository: Repository<User>,
   ) {}
+  
 
   findAll(): Promise<User[]> {
     return this.repository.find();
+  }
+
+
+  async seed() {
+    console.log('seed começo');
+    const users = [
+      { name: 'João Silva', cpf: '12345678900', email: 'joao@blavbla.com' },
+      
+    ];
   }
 
   findOne(cpf: string): Promise<User | null> {
@@ -34,4 +44,9 @@ export class UserService {
       user,
     );
   }
+
 }
+
+
+
+
