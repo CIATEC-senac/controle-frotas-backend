@@ -5,8 +5,8 @@ export enum UserRole {
 }
 
 export enum UserType {
-  TERCEIRIZADO = 'terceirizado',
-  EFETIVADO = 'efetivado',
+  FUNCIONARIO = 'funcionario',
+  TERCEIROS = 'terceiros',
 }
 
 @Entity('usuario')
@@ -23,7 +23,7 @@ export class User {
   @Column({ length: 11, unique: true })
   cpf: string;
 
-  @Column({ length: 100, unique: true })
+  @Column({ length: 100, unique: true, nullable: true })
   email: string;
 
   @Column({ name: 'data_adm' })
@@ -48,7 +48,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserType,
-    default: UserType.EFETIVADO,
+    default: UserType.TERCEIROS,
   })
   tipo: UserType;
 
