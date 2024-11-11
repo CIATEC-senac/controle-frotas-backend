@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { UserDTO } from './dtos/user.dto';
 import { User } from './entities/user.entity';
@@ -9,8 +20,25 @@ export class UserController {
   constructor(private readonly service: UserService) {}
 
   @Get()
-   findAll(): Promise<User[]> {
-    return this.service.findAll();
+  findAll(
+    @Query('page') page: number,
+    @Query('perPage') perPage: number,
+  ): Promise<User[]> {
+    return this.service.findAll(page, perPage || 10);
+  }
+
+  @Get(':id')
+  async find(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<Response<any, Record<string, any>>> {
+    const user = await this.service.findOneById(id);
+
+    if (user != null) {
+      return res.send(user);
+    }
+
+    return res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Post()
@@ -20,6 +48,28 @@ export class UserController {
       res.status(HttpStatus.CREATED).json(result);
     } catch (e) {
       res.status(HttpStatus.CONFLICT).send(e.message);
+    }
+  }
+
+  @Patch()
+  async update(@Body() user: UserDTO, @Res() res: Response) {
+    console.log(user);
+
+    try {
+      const result = await this.service.update(user.toEntity());
+      res.status(HttpStatus.OK).json(result);
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send(e.message);
+    }
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number, @Res() res: Response) {
+    try {
+      const result = await this.service.delete(id);
+      res.status(HttpStatus.OK).json(result);
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send(e.message);
     }
   }
 }

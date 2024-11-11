@@ -11,8 +11,18 @@ export class UserService {
     private repository: Repository<User>,
   ) {}
 
-  findAll(): Promise<User[]> {
-    return this.repository.find();
+  findAll(page: number = 1, perPage: number): Promise<User[]> {
+    page = page === 0 ? 1 : page;
+
+    const skip = perPage * (page - 1);
+
+    return this.repository.find({
+      order: {
+        id: 'ASC',
+      },
+      take: perPage,
+      skip: skip,
+    });
   }
 
   //Popular o banco de dados com 1000 usuários com valores aleatorios
@@ -49,7 +59,7 @@ export class UserService {
       user.obra = constroiAleatorio(alfabeto, 1, 100);
       user.cargo = UserRole.MOTORISTA;
       user.cnh = constroiAleatorio(numerais, 11, 11);
-      user.tipo = UserType.EFETIVADO;
+      user.tipo = UserType.TERCEIROS;
       user.senha = AuthService.encrypt('senha');
 
       return user;
@@ -66,6 +76,10 @@ export class UserService {
     return this.repository.findOneBy({ cpf });
   }
 
+  findOneById(id: number): Promise<User | null> {
+    return this.repository.findOneBy({ id });
+  }
+
   async delete(id: number): Promise<void> {
     await this.repository.delete(id);
   }
@@ -74,7 +88,7 @@ export class UserService {
     return this.repository.save(user);
   }
 
-  update(user: User) {
+  update({ senha, ...user }: User) {
     return this.repository.update(
       {
         id: user.id,
