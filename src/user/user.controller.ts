@@ -53,8 +53,6 @@ export class UserController {
 
   @Patch()
   async update(@Body() user: UserDTO, @Res() res: Response) {
-    console.log(user);
-
     try {
       const result = await this.service.update(user.toEntity());
       res.status(HttpStatus.OK).json(result);
