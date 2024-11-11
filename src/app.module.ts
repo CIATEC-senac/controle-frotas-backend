@@ -6,6 +6,9 @@ import { UserModule } from './user/user.module';
 import { VeiculoController } from './veiculo/veiculo.controller';
 import { VeiculoModule } from './veiculo/veiculo.module';
 import { Veiculo } from './veiculo/entities/veiculo.entity';
+import { UserController } from './user/user.controller';
+
+
 
 @Module({
   imports: [
@@ -23,6 +26,6 @@ import { Veiculo } from './veiculo/entities/veiculo.entity';
     AuthModule,
     VeiculoModule,
   ],
-  controllers: [VeiculoController],
+  controllers: [VeiculoController, UserController],
 })
 export class AppModule {}

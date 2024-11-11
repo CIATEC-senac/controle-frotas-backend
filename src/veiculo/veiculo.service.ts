@@ -47,9 +47,10 @@ export class VeiculoService {
             veiculo.capacidade = Number(constroiVeiculos(numerais, 1, 3));
             veiculo.ano = Number (constroiVeiculos(numerais, 4, 4));
             veiculo.obra = constroiVeiculos(alfabeto, 1, 100);
-            veiculo. status = true;
+            veiculo.status = true;
             veiculo.modelo = VeiculoType.BUS;
             veiculo.placa = placaAleatoria ();
+            veiculo.id = String (constroiVeiculos(numerais, 10,10));
 
             return veiculo;
         }
@@ -66,7 +67,7 @@ export class VeiculoService {
     }
     
     findAll(): Promise<Veiculo []> {
-        return this,this.repository.find();
+        return this.repository.find();
     }
 
     findOne(placa: string): Promise<Veiculo | null>{

@@ -17,12 +17,12 @@ export class VeiculoDTO {
     @IsEnum(VeiculoType)
     modelo: VeiculoType = VeiculoType.BUS;
 
+    @IsNumber ()
+    id: Number;
 
-    @Type (()=> Number)
     @IsNumber()
     capacidade: Number;
 
-    @Type (()=> Number)
     @IsNumber()
     ano: Number;
 

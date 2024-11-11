@@ -1,4 +1,4 @@
-import {Column, Entity, PrimaryColumn} from 'typeorm';
+import {Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
  
 
 export enum VeiculoType {
@@ -11,6 +11,9 @@ export enum VeiculoType {
 
 @Entity ('Veiculo')
 export class Veiculo {
+    @PrimaryGeneratedColumn ()
+    id: string;
+    
     @PrimaryColumn({ length: 7 }) 
     placa: string;
 
