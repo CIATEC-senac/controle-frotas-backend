@@ -11,15 +11,17 @@ export class UserService {
     private repository: Repository<User>,
   ) {}
 
-  findAll(page: number = 1): Promise<User[]> {
+  findAll(page: number = 1, perPage: number): Promise<User[]> {
     page = page === 0 ? 1 : page;
+
+    const skip = perPage * (page - 1);
 
     return this.repository.find({
       order: {
         id: 'ASC',
       },
-      take: 20,
-      skip: 20 * (page - 1),
+      take: perPage,
+      skip: skip,
     });
   }
 
@@ -86,7 +88,7 @@ export class UserService {
     return this.repository.save(user);
   }
 
-  update(user: User) {
+  update({ senha, ...user }: User) {
     return this.repository.update(
       {
         id: user.id,

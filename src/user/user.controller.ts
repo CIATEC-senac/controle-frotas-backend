@@ -20,8 +20,11 @@ export class UserController {
   constructor(private readonly service: UserService) {}
 
   @Get()
-  findAll(@Query('page') page: number): Promise<User[]> {
-    return this.service.findAll(page);
+  findAll(
+    @Query('page') page: number,
+    @Query('perPage') perPage: number,
+  ): Promise<User[]> {
+    return this.service.findAll(page, perPage || 10);
   }
 
   @Get(':id')

@@ -12,8 +12,7 @@ export class AuthController {
     return this.authService
       .signIn(signInDto.cpf, signInDto.senha)
       .catch((e) => {
-        console.log(e);
-        return e;
+        throw e;
       });
   }
 }

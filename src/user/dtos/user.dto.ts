@@ -39,7 +39,7 @@ export class UserDTO {
   dataAdmissao: Date;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === 'true' || value === true)
   status: boolean;
 
   @IsNotEmpty()
