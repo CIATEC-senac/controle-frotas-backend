@@ -17,14 +17,14 @@ export class VeiculoDTO {
     @IsEnum(VeiculoType)
     modelo: VeiculoType = VeiculoType.BUS;
 
+    @IsNumber ()
+    id: Number;
 
-    @Type (()=> Number)
     @IsNumber()
-    capacidade: string;
+    capacidade: Number;
 
-    @Type (()=> Number)
     @IsNumber()
-    ano: string;
+    ano: Number;
 
   @IsCarPlate()
    placa: string;
