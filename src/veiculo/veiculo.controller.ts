@@ -1,4 +1,12 @@
-import { Controller, Body, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { VeiculoDTO } from './dtos/veiculo.dto';
 import { Veiculo } from './entities/veiculo.entity';
@@ -9,8 +17,11 @@ export class VeiculoController {
   constructor(private readonly service: VeiculoService) {}
 
   @Get()
-  findAll(): Promise<Veiculo[]> {
-    return this.service.findAll();
+  findAll(
+    @Query('page') page: number,
+    @Query('perPage') perPage: number,
+  ): Promise<Veiculo[]> {
+    return this.service.findAll(page, perPage || 10);
   }
 
   @Post()

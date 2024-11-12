@@ -7,10 +7,10 @@ export enum VeiculoType {
   MINIBUS = 'MiniOnibus',
 }
 
-@Entity('Veiculo')
+@Entity('veiculo')
 export class Veiculo {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @PrimaryColumn({ length: 7 })
   placa: string;
@@ -28,10 +28,10 @@ export class Veiculo {
   @Column({ default: true })
   status: boolean;
 
-  @Column({ length: 3 })
+  @Column()
   capacidade: number;
 
-  @Column({ length: 4 })
+  @Column()
   ano: number;
 
   @Column({ length: 100 })
