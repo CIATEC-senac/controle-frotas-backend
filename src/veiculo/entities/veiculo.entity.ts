@@ -1,43 +1,39 @@
-import {Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
- 
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum VeiculoType {
-    CAR = 'Carro',
-    VAN = 'Van',
-    BUS = 'Ônibus',
-    MINIBUS = 'MiniOnibus',
-  }
-  
+  CAR = 'Carro',
+  VAN = 'Van',
+  BUS = 'Ônibus',
+  MINIBUS = 'MiniOnibus',
+}
 
-@Entity ('Veiculo')
+@Entity('Veiculo')
 export class Veiculo {
-    @PrimaryGeneratedColumn ()
-    id: string;
-    
-    @PrimaryColumn({ length: 7 }) 
-    placa: string;
+  @PrimaryGeneratedColumn()
+  id: string;
 
-    @Column ({
-        type: 'enum',
-        enum: VeiculoType,
-        default: VeiculoType.BUS,
-    })
-    modelo: VeiculoType;
+  @PrimaryColumn({ length: 7 })
+  placa: string;
 
-    @Column ({length: 100})
-    empresa: string;
+  @Column({
+    type: 'enum',
+    enum: VeiculoType,
+    default: VeiculoType.BUS,
+  })
+  modelo: VeiculoType;
 
-    @Column ({default: true})
-    status: boolean;
+  @Column({ length: 100 })
+  empresa: string;
 
-    @Column ({length: 3})
-    capacidade: Number;
+  @Column({ default: true })
+  status: boolean;
 
-    @Column ({length: 4})
-    ano: Number;
+  @Column({ length: 3 })
+  capacidade: number;
 
-    @Column({ length: 100 })
-    obra: string;
+  @Column({ length: 4 })
+  ano: number;
 
-    
+  @Column({ length: 100 })
+  obra: string;
 }

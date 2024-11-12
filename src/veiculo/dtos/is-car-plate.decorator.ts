@@ -1,13 +1,18 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import {
+  ValidationArguments,
+  ValidationOptions,
+  registerDecorator,
+} from 'class-validator';
 
 export function IsCarPlate(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isCarPlate',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       validator: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         validate(value: any, args: ValidationArguments) {
           if (typeof value !== 'string') {
             return false;

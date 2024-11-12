@@ -8,8 +8,6 @@ import { VeiculoModule } from './veiculo/veiculo.module';
 import { Veiculo } from './veiculo/entities/veiculo.entity';
 import { UserController } from './user/user.controller';
 
-
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({

@@ -1,5 +1,4 @@
-import { Transform, Type } from 'class-transformer';
-import { IsCarPlate } from './is-car-plate.decorator';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -8,29 +7,27 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { VeiculoType,Veiculo } from '../entities/veiculo.entity';
-
-
+import { Veiculo, VeiculoType } from '../entities/veiculo.entity';
+import { IsCarPlate } from './is-car-plate.decorator';
 
 export class VeiculoDTO {
-  
-    @IsOptional()
-    @IsEnum(VeiculoType)
-    modelo: VeiculoType = VeiculoType.BUS;
+  @IsOptional()
+  @IsEnum(VeiculoType)
+  modelo: VeiculoType = VeiculoType.BUS;
 
-    @IsNumber ()
-    id: Number;
+  @IsNumber()
+  id: number;
 
-    @IsNumber()
-    capacidade: Number;
+  @IsNumber()
+  capacidade: number;
 
-    @IsNumber()
-    ano: Number;
+  @IsNumber()
+  ano: number;
 
   @IsCarPlate()
-   placa: string;
+  placa: string;
 
-   @IsString()
+  @IsString()
   @MaxLength(100)
   empresa: string;
 
@@ -43,22 +40,15 @@ export class VeiculoDTO {
   status: boolean;
 
   toEntity() {
-    const  entity= new Veiculo();
+    const entity = new Veiculo();
     entity.modelo = this.modelo;
-    entity.capacidade =this.capacidade;
+    entity.capacidade = this.capacidade;
     entity.ano = this.ano;
-    entity.placa =this.placa;
-    entity.empresa =this.empresa;
+    entity.placa = this.placa;
+    entity.empresa = this.empresa;
     entity.obra = this.obra;
-    entity.status =this.status;
+    entity.status = this.status;
 
     return entity;
   }
-
 }
-
-
-
-
-
-

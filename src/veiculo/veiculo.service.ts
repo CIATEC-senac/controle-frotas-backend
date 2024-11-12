@@ -1,93 +1,87 @@
-import { Injectable } from '@nestjs/common'; 
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InsertResult, Repository } from 'typeorm';
 import { Veiculo, VeiculoType } from './entities/veiculo.entity';
 
 @Injectable()
 export class VeiculoService {
-    constructor (
-        @InjectRepository (Veiculo)
-        private repository: Repository<Veiculo>,
-    ){}
+  constructor(
+    @InjectRepository(Veiculo)
+    private repository: Repository<Veiculo>,
+  ) {}
 
+  async seed() {
+    console.log('seed start');
 
-    async seed () {
-        console.log ('seed start');
+    const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numerais = '0123456789';
 
-        const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const numerais = '0123456789';
+    const constroiVeiculos = (dados: string, min: number, max: number) => {
+      const lista = dados.split('');
+      const tamnho = Math.floor(Math.random() * (max - min)) + min;
+      let valor = '';
 
-        const constroiVeiculos = (dados: string, min: number, max: number ) => {
-            const lista = dados.split ('');
-            const tamnho = Math.floor (Math.random() * (max-min)) + min;
-            let valor ='';
+      for (let i = 0; i < tamnho; i++) {
+        const randomChar = Math.floor(Math.random() * lista.length);
+        valor += lista[randomChar];
+      }
 
-            for (let i=0; i<tamnho; i++){
-                const randomChar = Math.floor (Math.random() * lista.length);
-                valor += lista [randomChar];
-            }
+      return valor;
+    };
 
-            return valor;
+    const placaAleatoria = (): string => {
+      const parte1 = constroiVeiculos(alfabeto, 3, 3);
+      const parte2 = constroiVeiculos(numerais, 1, 1);
+      const parte3 = constroiVeiculos(alfabeto, 1, 1);
+      const parte4 = constroiVeiculos(numerais, 2, 2);
 
-        };
+      return `${parte1}${parte2}${parte3}${parte4}`;
+    };
 
-        const placaAleatoria = (): string => {
-            const parte1 = constroiVeiculos(alfabeto, 3, 3); 
-            const parte2 = constroiVeiculos(numerais, 1, 1);
-            const parte3 = constroiVeiculos(alfabeto, 1, 1); 
-            const parte4 = constroiVeiculos(numerais, 2, 2); 
+    const constroiVeiculosAleatorio = (): Veiculo => {
+      const veiculo = new Veiculo();
 
-            return `${parte1}${parte2}${parte3}${parte4}`;
-        };
+      veiculo.empresa = String(constroiVeiculos(alfabeto, 10, 15));
+      veiculo.capacidade = Number(constroiVeiculos(numerais, 1, 3));
+      veiculo.ano = Number(constroiVeiculos(numerais, 4, 4));
+      veiculo.obra = constroiVeiculos(alfabeto, 1, 100);
+      veiculo.status = true;
+      veiculo.modelo = VeiculoType.BUS;
+      veiculo.placa = placaAleatoria();
+      veiculo.id = String(constroiVeiculos(numerais, 10, 10));
 
-        const constroiVeiculosAleatorio =(): Veiculo => {
-            const veiculo = new Veiculo ();
+      return veiculo;
+    };
 
-            veiculo.empresa = String (constroiVeiculos(alfabeto, 10, 15));
-            veiculo.capacidade = Number(constroiVeiculos(numerais, 1, 3));
-            veiculo.ano = Number (constroiVeiculos(numerais, 4, 4));
-            veiculo.obra = constroiVeiculos(alfabeto, 1, 100);
-            veiculo.status = true;
-            veiculo.modelo = VeiculoType.BUS;
-            veiculo.placa = placaAleatoria ();
-            veiculo.id = String (constroiVeiculos(numerais, 10,10));
-
-            return veiculo;
-        }
-
-        for (let i = 0; i <= 100; i++) {
-            await this.create(constroiVeiculosAleatorio()).catch((e) => 
-              console.log('erro ao inserir veiculo', i), 
-            );
-          }
+    for (let i = 0; i <= 100; i++) {
+      await this.create(constroiVeiculosAleatorio()).catch(() =>
+        console.log('erro ao inserir veiculo', i),
+      );
     }
+  }
 
-    async delete(placa: string): Promise<void> {
-        await this.repository.delete({ placa });
-    }
-    
-    findAll(): Promise<Veiculo []> {
-        return this.repository.find();
-    }
+  async delete(placa: string): Promise<void> {
+    await this.repository.delete({ placa });
+  }
 
-    findOne(placa: string): Promise<Veiculo | null>{
-        return this.repository.findOneBy({placa});
-    }
+  findAll(): Promise<Veiculo[]> {
+    return this.repository.find();
+  }
 
-    create(veiculo: Veiculo): Promise<InsertResult>{
-        return this.repository. insert (veiculo);
-    }
+  findOne(placa: string): Promise<Veiculo | null> {
+    return this.repository.findOneBy({ placa });
+  }
 
-    update (veiculo: Veiculo){
-        return this.repository. update(
-            {
-                placa: veiculo.placa,
-            },
-            veiculo,
-        );
-    }
+  create(veiculo: Veiculo): Promise<InsertResult> {
+    return this.repository.insert(veiculo);
+  }
 
- 
-
-
+  update(veiculo: Veiculo) {
+    return this.repository.update(
+      {
+        placa: veiculo.placa,
+      },
+      veiculo,
+    );
+  }
 }

@@ -50,4 +50,24 @@ export class UserController {
       res.status(HttpStatus.CONFLICT).send(e.message);
     }
   }
+
+  @Patch()
+  async update(@Body() user: UserDTO, @Res() res: Response) {
+    try {
+      const result = await this.service.update(user.toEntity());
+      res.status(HttpStatus.OK).json(result);
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send(e.message);
+    }
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number, @Res() res: Response) {
+    try {
+      const result = await this.service.delete(id);
+      res.status(HttpStatus.OK).json(result);
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).send(e.message);
+    }
+  }
 }
