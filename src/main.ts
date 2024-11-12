@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { UserService } from './user/user.service';
@@ -14,7 +14,9 @@ async function bootstrap() {
 
   app.enableCors();
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000, () => {
+    new Logger().log(`Servidor rodando na porta: ${process.env.PORT ?? 3000}`);
+  });
 
   const userService = app.get(UserService);
   await userService.seed();
