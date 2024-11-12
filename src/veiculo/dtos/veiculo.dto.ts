@@ -13,6 +13,7 @@ import { VeiculoType,Veiculo } from '../entities/veiculo.entity';
 
 
 export class VeiculoDTO {
+  
     @IsOptional()
     @IsEnum(VeiculoType)
     modelo: VeiculoType = VeiculoType.BUS;
