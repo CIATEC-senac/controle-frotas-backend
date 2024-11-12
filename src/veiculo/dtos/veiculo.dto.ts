@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -15,12 +15,16 @@ export class VeiculoDTO {
   @IsEnum(VeiculoType)
   modelo: VeiculoType = VeiculoType.BUS;
 
+  @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   id: number;
 
+  @Type(() => Number)
   @IsNumber()
   capacidade: number;
 
+  @Type(() => Number)
   @IsNumber()
   ano: number;
 

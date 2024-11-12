@@ -1,10 +1,10 @@
 import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum VeiculoType {
-  CAR = 'Carro',
-  VAN = 'Van',
-  BUS = 'Ônibus',
-  MINIBUS = 'MiniOnibus',
+  CAR = 'carro',
+  VAN = 'van',
+  BUS = 'onibus',
+  MINIBUS = 'minionibus',
 }
 
 @Entity('veiculo')
