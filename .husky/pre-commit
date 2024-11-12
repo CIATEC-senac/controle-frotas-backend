@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo "Running lint"
+
+# Run lint
+npm run lint
+
+if [ $? -ne 0 ]; then
+ echo "Lint failed"
+ exit 1
+fi
+
+echo "Running format"
+
+npm run format
