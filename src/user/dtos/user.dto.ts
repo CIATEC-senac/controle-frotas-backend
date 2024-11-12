@@ -15,6 +15,9 @@ import { AuthService } from 'src/auth/auth.service';
 import { User, UserRole, UserType } from '../entities/user.entity';
 
 export class UserDTO {
+  @IsOptional()
+  id: number;
+
   @Type(() => Number)
   @IsNumber()
   matricula: number;
@@ -27,6 +30,7 @@ export class UserDTO {
   @MaxLength(11)
   cpf: string;
 
+  @IsOptional()
   @IsEmail()
   email: string;
 
@@ -35,7 +39,7 @@ export class UserDTO {
   dataAdmissao: Date;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === 'true' || value === true)
   status: boolean;
 
   @IsNotEmpty()
@@ -51,7 +55,7 @@ export class UserDTO {
 
   @IsOptional()
   @IsEnum(UserType)
-  tipo: UserType = UserType.EFETIVADO;
+  tipo: UserType = UserType.TERCEIROS;
 
   @IsOptional()
   @IsString()
@@ -59,6 +63,7 @@ export class UserDTO {
 
   toEntity() {
     const entity = new User();
+    entity.id = this.id;
     entity.matricula = this.matricula;
     entity.nome = this.nome;
     entity.cpf = this.cpf;

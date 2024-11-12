@@ -10,9 +10,9 @@ export class UserService { //Transforma a classe em um serviço injetavél em ou
     @InjectRepository(User) //Injeta o TypeOrm para manipular a entidade user.  
     private repository: Repository<User>, //O Repository vai ser responsavel pelo CRUD do User no banco de dados, private repository pois só e acessado dentro da classe UserService.
   ) {}
-  
+
   findAll(): Promise<User[]> {
-    return this.repository.find(); //vai retornar todos os registros do user
+    return this.repository.find();
   }
 
   //Popular o banco de dados com 1000 usuários com valores aleatorios
@@ -51,7 +51,7 @@ export class UserService { //Transforma a classe em um serviço injetavél em ou
       user.obra = constroiAleatorio(alfabeto, 1, 100);
       user.cargo = UserRole.MOTORISTA;
       user.cnh = constroiAleatorio(numerais, 11, 11);
-      user.tipo = UserType.EFETIVADO;
+      user.tipo = UserType.TERCEIROS;
       user.senha = AuthService.encrypt('senha');
 
       return user;
@@ -68,6 +68,10 @@ export class UserService { //Transforma a classe em um serviço injetavél em ou
     return this.repository.findOneBy({ cpf });
   }
 
+  findOneById(id: number): Promise<User | null> {
+    return this.repository.findOneBy({ id });
+  }
+
   async delete(id: number): Promise<void> {
     await this.repository.delete(id);
   }
@@ -76,7 +80,7 @@ export class UserService { //Transforma a classe em um serviço injetavél em ou
     return this.repository.save(user);
   }
 
-  update(user: User) {
+  update({ senha, ...user }: User) {
     return this.repository.update(
       {
         id: user.id,
