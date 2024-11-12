@@ -5,7 +5,10 @@ import { UserService } from './user/user.service';
 import { VeiculoService } from './veiculo/veiculo.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['warn', 'error', 'debug', 'log', 'verbose'],
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
