@@ -14,19 +14,18 @@ Projeto de gestão e controle de frotas para a empresa AlfaID
 $ pnpm install
 ```
 
+## Enviroment
+
+Copiar o arquivo .example.env para .env. Verificar com o time os valores sensíveis
+
+```bash
+$ cp .example.env .env
+```
+
 ## Compilar e rodar o projeto
 
 ```bash
 $ docker compose up -d
-
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
 ```
 
 ## Executar Testes
