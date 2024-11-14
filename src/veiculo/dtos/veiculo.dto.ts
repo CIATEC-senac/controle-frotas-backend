@@ -45,6 +45,7 @@ export class VeiculoDTO {
 
   toEntity() {
     const entity = new Veiculo();
+    entity.id = this.id;
     entity.modelo = this.modelo;
     entity.capacidade = this.capacidade;
     entity.ano = this.ano;

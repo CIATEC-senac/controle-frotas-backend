@@ -60,8 +60,8 @@ export class VeiculoService {
     }
   }
 
-  async delete(placa: string): Promise<void> {
-    await this.repository.delete({ placa });
+  async delete(id: number): Promise<void> {
+    await this.repository.delete({ id });
   }
 
   findAll(page: number, perPage: number): Promise<Veiculo[]> {
@@ -75,6 +75,12 @@ export class VeiculoService {
     return this.repository.findOneBy({ placa });
   }
 
+  async findOneBy(id: number): Promise<Veiculo | undefined> {
+    return this.repository.findOne({
+      where: { id },
+    });
+  }
+
   create(veiculo: Veiculo): Promise<InsertResult> {
     return this.repository.insert(veiculo);
   }
@@ -82,7 +88,7 @@ export class VeiculoService {
   update(veiculo: Veiculo) {
     return this.repository.update(
       {
-        placa: veiculo.placa,
+        id: veiculo.id,
       },
       veiculo,
     );
