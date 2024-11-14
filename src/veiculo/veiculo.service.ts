@@ -75,6 +75,13 @@ export class VeiculoService {
     return this.repository.findOneBy({ placa });
   }
 
+    
+  async findOneBy(placa: string): Promise<Veiculo | undefined> {
+    return this.repository.findOne({
+      where: { placa },});
+  }
+  
+
   create(veiculo: Veiculo): Promise<InsertResult> {
     return this.repository.insert(veiculo);
   }

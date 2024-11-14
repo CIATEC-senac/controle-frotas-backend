@@ -10,14 +10,13 @@ import {
 import { Veiculo, VeiculoType } from '../entities/veiculo.entity';
 import { IsCarPlate } from './is-car-plate.decorator';
 
+
 export class VeiculoDTO {
   @IsOptional()
   @IsEnum(VeiculoType)
   modelo: VeiculoType = VeiculoType.BUS;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
   id: number;
 
   @Type(() => Number)
