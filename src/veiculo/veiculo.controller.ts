@@ -1,14 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Query,
   Res,
-  Delete,
-  Patch,
-  Param,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { VeiculoDTO } from './dtos/veiculo.dto';
@@ -28,7 +28,7 @@ export class VeiculoController {
   }
 
   @Post()
-  async create(@Body() veiculo:VeiculoDTO, @Res() res:Response) {
+  async create(@Body() veiculo: VeiculoDTO, @Res() res: Response) {
     try {
       const result = await this.service.create(veiculo.toEntity());
       res.status(HttpStatus.CREATED).json(result);
@@ -37,14 +37,14 @@ export class VeiculoController {
     }
   }
 
-  @Get(':placa')
+  @Get(':id')
   async find(
-    @Param('placa') placa:string,
-    @Res() res:Response,
+    @Param('id') id: number,
+    @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
-    const veiculo= await this.service.findOneBy(placa);
+    const veiculo = await this.service.findOneBy(id);
 
-    if (veiculo!= null) {
+    if (veiculo != null) {
       return res.send(veiculo);
     }
 
@@ -52,7 +52,7 @@ export class VeiculoController {
   }
 
   @Patch()
-  async update(@Body() veiculo:VeiculoDTO, @Res() res:Response) {
+  async update(@Body() veiculo: VeiculoDTO, @Res() res: Response) {
     try {
       const resultado = await this.service.update(veiculo.toEntity());
       res.status(HttpStatus.OK).json(resultado);
@@ -61,16 +61,13 @@ export class VeiculoController {
     }
   }
 
-  @Delete(':placa')
-  async delete(@Param('placa') placa:string, @Res() res:Response) {
+  @Delete(':id')
+  async delete(@Param('id') id: number, @Res() res: Response) {
     try {
-      const resultado = await this.service.delete(placa);
+      const resultado = await this.service.delete(id);
       res.status(HttpStatus.OK).json(resultado);
-    } catch(e) {
+    } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
     }
   }
-
-
 }
-
