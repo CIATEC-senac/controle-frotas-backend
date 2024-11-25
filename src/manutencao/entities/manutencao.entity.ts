@@ -2,33 +2,42 @@ import {
     Column,
     Entity,
     PrimaryGeneratedColumn,
-} from 'typeorm';
+    ManyToOne,
+    JoinColumn,
+  } from 'typeorm';
+  import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
 
-export enum ManutencaoType {
+  export enum ManutencaoType {
     CORRETIVA = 'corretiva',
     PREVENTIVA = 'preventiva',
-}
-@Entity ('manutencao')
-export class Manutencao {
+  }
+
+  
+  @Entity('manutencao')
+  export class Manutencao {
     @PrimaryGeneratedColumn()
     id: number;
-
-    @Column ({
-        type: 'enum',
-        enum: ManutencaoType,
-        default: ManutencaoType.CORRETIVA,
+  
+    @Column({
+      type: 'enum',
+      enum: ManutencaoType,
+      default: ManutencaoType.CORRETIVA,
     })
     tipo: ManutencaoType;
-
-    @Column ()
-    descricao: String;
-
-    @Column ()
-    placa: String;
-
-    @Column ()
+  
+    @Column()
+    descricao: string;
+  
+  
+  
+    @Column()
     data: Date;
 
-
-    
-}
+     
+  @ManyToOne(() => Veiculo, veiculo => veiculo.manutencoes, {
+    eager: true, 
+    nullable: false, 
+  })
+  veiculo: Veiculo; 
+  }
+  

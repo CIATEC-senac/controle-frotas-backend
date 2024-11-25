@@ -9,6 +9,9 @@ import {
 } from 'class-validator';
 import { Veiculo, VeiculoType } from '../entities/veiculo.entity';
 import { IsCarPlate } from './is-car-plate.decorator';
+import { Manutencao } from 'src/manutencao/entities/manutencao.entity';
+import { OneToMany } from 'typeorm';
+
 
 export class VeiculoDTO {
   @IsOptional()
@@ -42,6 +45,10 @@ export class VeiculoDTO {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   status: boolean;
+
+  @OneToMany(() => Manutencao, (manutencao) => manutencao.veiculo)
+  manutencoes: Manutencao[];
+
 
   toEntity() {
     const entity = new Veiculo();

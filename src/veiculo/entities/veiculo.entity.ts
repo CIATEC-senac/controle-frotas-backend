@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn,  OneToMany } from 'typeorm';
+import { Manutencao } from 'src/manutencao/entities/manutencao.entity';
 export enum VeiculoType {
   CAR = 'carro',
   VAN = 'van',
@@ -36,4 +36,7 @@ export class Veiculo {
 
   @Column({ length: 100 })
   obra: string;
+
+  @OneToMany(() => Manutencao, manutencao => manutencao.veiculo)
+  manutencoes: Manutencao[];
 }

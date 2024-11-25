@@ -1,43 +1,45 @@
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
-  } from 'class-validator';
-import { IsCarPlate } from "src/veiculo/dtos/is-car-plate.decorator";
-import { Manutencao, ManutencaoType } from "../entities/manutencao.entity";
+} from 'class-validator';
+import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
+import { ManutencaoType, Manutencao } from '../entities/manutencao.entity';
+import { ManyToOne, JoinColumn } from 'typeorm';
 
 
-  export class ManutencaoDTO {
-    @IsOptional()
-    @Type(() => Number)
-    @IsNumber()
-    id: number;
+export class ManutencaoDTO {
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  id: number;
+  
 
-    @IsCarPlate()
-    placa: String;
+  @IsString()
+  descricao: string;
 
-    @IsString()
-    descricao:String;
+  @IsEnum(ManutencaoType)
+  @IsOptional()
+  tipo: ManutencaoType = ManutencaoType.CORRETIVA;
 
-    @IsEnum (ManutencaoType)
-    @IsOptional ()
-    tipo: ManutencaoType = ManutencaoType.CORRETIVA;
+  @IsDate()
+  data: Date;
 
-    @IsDate ()
-    data: Date;
+  @ManyToOne(() => Veiculo, veiculo => veiculo.manutencoes, { eager: true })
+  veiculo: Veiculo; 
 
+  toEntity() {
+    const entity = new Manutencao();
+    entity.id = this.id;
+    entity.descricao = this.descricao;
+    entity.veiculo = new Veiculo();
+    entity.veiculo = this.veiculo; 
+    entity.tipo = this.tipo;
+    entity.data = this.data;
 
-    toEntity () {
-        const entity = new Manutencao ();
-        entity.id = this.id;
-        entity.descricao = this.descricao;
-        entity.placa = this.placa;
-        entity.tipo = this.tipo;
-        entity.data = this.data;
-
-        return entity;
-    }
+    return entity;
+  }
 }
