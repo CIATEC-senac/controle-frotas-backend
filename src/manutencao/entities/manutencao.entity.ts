@@ -10,6 +10,8 @@ import {
   export enum ManutencaoType {
     CORRETIVA = 'corretiva',
     PREVENTIVA = 'preventiva',
+    PREDITIVA = 'preditiva',
+    PROGRAMADA = 'programada',
   }
 
   
