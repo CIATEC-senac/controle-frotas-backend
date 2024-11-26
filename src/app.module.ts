@@ -8,27 +8,33 @@ import { UserModule } from './user/user.module';
 import { Veiculo } from './veiculo/entities/veiculo.entity';
 import { VeiculoController } from './veiculo/veiculo.controller';
 import { VeiculoModule } from './veiculo/veiculo.module';
+import { ManutencaoController } from './manutencao/manutencao.controller';
+import { ManutencaoModule } from './manutencao/manutencao.module';
+import { Manutencao } from './manutencao/entities/manutencao.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [User, Veiculo],
+      host: 'database', // Nome do serviço do PostgreSQL no docker-compose.yml
+      port: 5432,
+      username: 'admin',
+      password: 'admin',
+      database: 'frotas',
+      entities: [User, Veiculo, Manutencao],
       synchronize: true,
     }),
     UserModule,
     AuthModule,
     VeiculoModule,
+    ManutencaoModule,
   ],
-  controllers: [VeiculoController, UserController],
+  controllers: [VeiculoController, UserController, ManutencaoController],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AppLoggerMiddleware).forRoutes('user', 'veiculo');
+    consumer
+      .apply(AppLoggerMiddleware)
+      .forRoutes('user', 'veiculo', 'manutencao');
   }
 }

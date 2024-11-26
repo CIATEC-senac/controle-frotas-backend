@@ -7,6 +7,8 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { Manutencao } from 'src/manutencao/entities/manutencao.entity';
+import { OneToMany } from 'typeorm';
 import { Veiculo, VeiculoType } from '../entities/veiculo.entity';
 import { IsCarPlate } from './is-car-plate.decorator';
 
@@ -42,6 +44,9 @@ export class VeiculoDTO {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   status: boolean;
+
+  @OneToMany(() => Manutencao, (manutencao) => manutencao.veiculos)
+  manutencoes: Manutencao[];
 
   toEntity() {
     const entity = new Veiculo();
