@@ -33,6 +33,8 @@ import { Manutencao } from './manutencao/entities/manutencao.entity';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AppLoggerMiddleware).forRoutes('user', 'veiculo','manutencao');
+    consumer
+      .apply(AppLoggerMiddleware)
+      .forRoutes('user', 'veiculo', 'manutencao');
   }
 }
