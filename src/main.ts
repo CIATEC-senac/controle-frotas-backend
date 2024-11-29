@@ -18,12 +18,6 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000, () => {
     new Logger().log(`Servidor rodando na porta: ${process.env.PORT ?? 3000}`);
   });
-
-  // const userService = app.get(UserService);
-  // await userService.seed();
-
-  // const veiculoService = app.get(VeiculoService);
-  // await veiculoService.seed();
 }
 
 bootstrap();

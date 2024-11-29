@@ -45,4 +45,6 @@ export class Veiculo {
 
   @ManyToMany(() => Manutencao, (manutencao) => manutencao.id)
   manutencoes: Manutencao[];
+
+
 }
