@@ -1,5 +1,11 @@
 import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum ManutencaoType {
   CORRETIVA = 'corretiva',
@@ -26,6 +32,9 @@ export class Manutencao {
   @Column()
   data: Date;
 
-  @ManyToMany(() => Veiculo, (veiculo) => veiculo.id)
+  @ManyToMany(() => Veiculo, (veiculo) => veiculo.manutencoes, {
+    cascade: true,
+  })
+  @JoinTable()
   veiculos: Veiculo[];
 }
