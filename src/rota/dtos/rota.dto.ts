@@ -1,61 +1,66 @@
-import { IsBoolean, IsNumber, IsString, MaxLength, IsOptional, IsNotEmpty, IsArray, ArrayNotEmpty } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { Rota } from '../entities/rota.entity';
+import { IsNotEmpty, IsString, IsOptional, IsArray, IsInt, IsBoolean, IsNumber } from 'class-validator';
+import { Rota } from 'src/rota/entities/rota.entity';
+import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
 
 export class RotaDTO {
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true', { toClassOnly: true })
-  status: boolean;
-
   @IsOptional()
   id: number;
 
-  @IsNumber()
-  capacidade: number; 
+  @IsBoolean()
+  status: boolean;
 
+  @IsNotEmpty()
   @IsString()
-  @MaxLength(100)
   empresa: string;
 
   @IsNumber()
   tempoTotal: number;
 
   @IsNumber()
+  capacidade: number;
+
+  @IsNumber()
   kmTotal: number;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   destino: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   origem: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsString({ each: true })
+  // Agora waypoints é um array de strings (endereços)
   @IsOptional()
+  @IsArray()
   waypoints: string[];
 
   @IsOptional()
-  rotaJson: any;
-
   @IsString()
+  rotaJson?: any;
+
   @IsNotEmpty()
-  placa: string= 'ABC1234';
+  @IsString()
+  placa: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
   toEntity(): Rota {
-    const entity = new Rota();
-    entity.status = this.status !== undefined ? this.status : true;
-    entity.capacidade = this.capacidade;
-    entity.empresa = this.empresa;
-    entity.tempoTotal = this.tempoTotal;
-    entity.kmTotal = this.kmTotal;
-    entity.destino = this.destino;
-    entity.origem = this.origem;
-    entity.waypoints = this.waypoints || [];
-    entity.rotaJson = this.rotaJson;
-    entity.placa = this.placa; 
-    return entity;
+    const rota = new Rota();
+    rota.id = this.id;
+    rota.status = this.status;
+    rota.empresa = this.empresa;
+    rota.tempoTotal = this.tempoTotal;
+    rota.capacidade = this.capacidade;
+    rota.kmTotal = this.kmTotal;
+    rota.destino = this.destino;
+    rota.origem = this.origem;
+    rota.waypoints = [];  // preencher isso no service
+    rota.rotaJson = this.rotaJson;
+    rota.placa = this.placa;
+    rota.name = this.name;
+    return rota;
   }
 }
