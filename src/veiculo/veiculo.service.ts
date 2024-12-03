@@ -78,6 +78,9 @@ export class VeiculoService {
   async findOneBy(id: number): Promise<Veiculo | undefined> {
     return this.repository.findOne({
       where: { id },
+      relations: {
+        manutencoes: true,
+      },
     });
   }
 

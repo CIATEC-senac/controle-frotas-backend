@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, InsertResult, Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Manutencao } from './entities/manutencao.entity';
 
 @Injectable()
@@ -32,11 +32,14 @@ export class ManutencaoService {
   async findOneBy(id: number): Promise<Manutencao | undefined> {
     return this.repository.findOne({
       where: { id },
+      relations: {
+        veiculos: true,
+      },
     });
   }
 
-  create(manutencao: Manutencao): Promise<InsertResult> {
-    return this.repository.insert(manutencao);
+  create(manutencao: Manutencao): Promise<Manutencao> {
+    return this.repository.save(manutencao);
   }
 
   update(manutencao: Manutencao) {
