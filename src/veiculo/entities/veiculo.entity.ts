@@ -1,14 +1,12 @@
 import { Manutencao } from 'src/manutencao/entities/manutencao.entity';
+import { Rota } from 'src/rota/entities/rota.entity';
 import {
   Column,
   Entity,
   ManyToMany,
-  PrimaryColumn,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { OneToMany } from 'typeorm';
-import { Rota } from 'src/rota/entities/rota.entity';
-
 
 export enum VeiculoType {
   CAR = 'carro',
@@ -23,7 +21,7 @@ export class Veiculo {
   id: number;
 
   @Column({ length: 7, unique: true })
-placa: string;
+  placa: string;
 
   @Column({
     type: 'enum',
@@ -47,10 +45,9 @@ placa: string;
   @Column({ length: 100 })
   obra: string;
 
-  @ManyToMany(() => Manutencao, (manutencao) => manutencao.id)
+  @ManyToMany(() => Manutencao, (manutencao) => manutencao.veiculos)
   manutencoes: Manutencao[];
 
-  @OneToMany(() => Rota, rota => rota.veiculo)
+  @OneToMany(() => Rota, (rota) => rota.veiculo)
   rotas: Rota[];
-
 }
