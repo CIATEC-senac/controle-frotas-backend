@@ -64,6 +64,8 @@ export class RotaService {
       throw new Error('Veículo com a placa fornecida não encontrado');
     }
 
+    rota.empresa = veiculo.empresa;
+    rota.capacidade = veiculo.capacidade;
     rota.placa = veiculo.placa;
     rota.veiculo = veiculo;    
 

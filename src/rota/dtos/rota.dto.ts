@@ -9,15 +9,8 @@ export class RotaDTO {
   @IsBoolean()
   status: boolean;
 
-  @IsNotEmpty()
-  @IsString()
-  empresa: string;
-
   @IsNumber()
   tempoTotal: number;
-
-  @IsNumber()
-  capacidade: number;
 
   @IsNumber()
   kmTotal: number;
@@ -26,11 +19,11 @@ export class RotaDTO {
   @IsString()
   destino: string;
 
+
   @IsNotEmpty()
   @IsString()
   origem: string;
 
-  // Agora waypoints é um array de strings (endereços)
   @IsOptional()
   @IsArray()
   waypoints: string[];
@@ -47,13 +40,18 @@ export class RotaDTO {
   @IsString()
   name: string;
 
+  @IsOptional()
+  horaInicial: Date;
+
+  @IsOptional()
+  horaFinal: Date;
+
+
   toEntity(): Rota {
     const rota = new Rota();
     rota.id = this.id;
     rota.status = this.status;
-    rota.empresa = this.empresa;
     rota.tempoTotal = this.tempoTotal;
-    rota.capacidade = this.capacidade;
     rota.kmTotal = this.kmTotal;
     rota.destino = this.destino;
     rota.origem = this.origem;
@@ -61,6 +59,8 @@ export class RotaDTO {
     rota.rotaJson = this.rotaJson;
     rota.placa = this.placa;
     rota.name = this.name;
+    rota.horaInicial = this.horaInicial;
+    rota.horaFinal = this.horaFinal;
     return rota;
   }
 }

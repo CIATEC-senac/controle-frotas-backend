@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Veiculo } from 'src/veiculo/entities/veiculo.entity'; 
-import { Historico } from 'src/historico/entities/historico.entity';
 
 @Entity('rota')
 export class Rota {
@@ -13,14 +12,8 @@ export class Rota {
   @Column({ default: true })
   status: boolean;
 
-  @Column({ nullable: false })
-  empresa: string;
-
   @Column({ type: 'float', default: 0 })
   tempoTotal: number;
-
-  @Column()
-  capacidade: number;
 
   @Column({ type: 'float', default: 0 })
   kmTotal: number;
@@ -34,9 +27,14 @@ export class Rota {
   @Column('json', { nullable: true })
   waypoints: { latitude: number; longitude: number }[];
 
-
   @Column({ type: 'json', nullable: true })
   rotaJson: any;
+
+  @Column({ nullable: false })
+  capacidade: number;
+
+  @Column({ nullable: false })
+  empresa: string;
 
   @ManyToOne(() => Veiculo, (veiculo) => veiculo.rotas, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'placa' }) 
@@ -45,6 +43,18 @@ export class Rota {
   @Column({ nullable: false })
   placa: string;
 
-  
- 
+  @Column({ type: 'timestamp', nullable: true })
+  horaInicial: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  horaFinal: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async CapacidadeEmpresa() {
+    if (this.veiculo) {
+      this.capacidade = this.veiculo.capacidade;
+      this.empresa = this.veiculo.empresa;
+    }
+  }
 }
