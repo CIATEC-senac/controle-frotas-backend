@@ -1,43 +1,42 @@
-import { Veiculo } from "src/veiculo/entities/veiculo.entity";
-import { Column, Entity, PrimaryGeneratedColumn,BeforeInsert, BeforeUpdate, OneToMany, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Veiculo } from 'src/veiculo/entities/veiculo.entity'; // Importando a entidade Veiculo
 
-
-@Entity ('rota')
+@Entity('rota')
 export class Rota {
-    @PrimaryGeneratedColumn ()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ default: true })
-    status: boolean;
+  @Column({ default: true })
+  status: boolean;
 
-    @Column()
-    empresa: string;
+  @Column()
+  empresa: string;
 
-    @Column ()
-    tempoTotal: number;
+  @Column()
+  tempoTotal: number;
 
-    @Column ()
-    capacidade: number;
+  @Column()
+  capacidade: number;
 
-    @Column ()
-    kmTotal: number; 
+  @Column()
+  kmTotal: number;
 
-    @Column ()
-    destino: string;
+  @Column()
+  destino: string;
 
-    @Column ()
-    origem: string; 
+  @Column()
+  origem: string;
 
-    @Column ('text', { array: true, nullable: true })
-    waypoints: string []; 
+  @Column('text', { array: true, nullable: true })
+  waypoints: string[];
 
-    @Column({ type: 'json', nullable: true })
-    rotaJson: any; 
+  @Column({ type: 'json', nullable: true })
+  rotaJson: any;
 
-    @ManyToMany (()=> Veiculo, (veiculo)=> veiculo.placa)
-    veiculos: Veiculo [];
+  @ManyToOne(() => Veiculo, (veiculo) => veiculo.rotas)
+  @JoinColumn({ name: 'placa' }) 
+  veiculo: Veiculo;
 
-    
-  }
-
-
+  @Column({ nullable: false })
+  placa: string;
+}

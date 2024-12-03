@@ -1,20 +1,8 @@
-import { Transform, Type } from "class-transformer";
-import {
-  IsBoolean,
-  IsNumber, 
-  IsString, 
-  MaxLength, 
-  IsOptional,
-  IsNotEmpty,
-  IsArray,
-  ArrayNotEmpty,
-} from "class-validator";
-import { Rota } from "../entities/rota.entity";
-import { IsCarPlate } from "src/veiculo/dtos/is-car-plate.decorator";
-import { Veiculo } from "src/veiculo/entities/veiculo.entity";
+import { IsBoolean, IsNumber, IsString, MaxLength, IsOptional, IsNotEmpty, IsArray, ArrayNotEmpty } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { Rota } from '../entities/rota.entity';
 
 export class RotaDTO {
-
   @IsBoolean()
   @Transform(({ value }) => value === 'true', { toClassOnly: true })
   status: boolean;
@@ -23,7 +11,7 @@ export class RotaDTO {
   id: number;
 
   @IsNumber()
-  capacidade: number;
+  capacidade: number; 
 
   @IsString()
   @MaxLength(100)
@@ -52,28 +40,22 @@ export class RotaDTO {
   @IsOptional()
   rotaJson: any;
 
-  @IsArray()
+  @IsString()
   @IsNotEmpty()
-  @IsCarPlate()
-  veiculos: string [];
-  
-  
+  placa: string= 'ABC1234';
+
   toEntity(): Rota {
     const entity = new Rota();
-    entity.status = this.status !== undefined ? this.status : true; 
-    entity.capacidade = this.capacidade 
-    entity.empresa = this.empresa 
-    entity.tempoTotal = this.tempoTotal 
-    entity.kmTotal = this.kmTotal 
+    entity.status = this.status !== undefined ? this.status : true;
+    entity.capacidade = this.capacidade;
+    entity.empresa = this.empresa;
+    entity.tempoTotal = this.tempoTotal;
+    entity.kmTotal = this.kmTotal;
     entity.destino = this.destino;
     entity.origem = this.origem;
-    entity.waypoints = this.waypoints || []; 
+    entity.waypoints = this.waypoints || [];
     entity.rotaJson = this.rotaJson;
-    entity.veiculos = this.veiculos.map((placa)=> { const veiculo = new Veiculo ();
-      veiculo.placa = placa; 
-      return veiculo
-    })
-
+    entity.placa = this.placa; 
     return entity;
   }
 }

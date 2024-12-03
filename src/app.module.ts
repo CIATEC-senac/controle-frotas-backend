@@ -14,6 +14,9 @@ import { Manutencao } from './manutencao/entities/manutencao.entity';
 import { RotaModule } from './rota/rota.module';
 import { RotaController } from './rota/rota.controller';
 import { Rota } from './rota/entities/rota.entity';
+import { HistoricoController } from './historico/historico.controller';
+import { HistoricoService } from './historico/historico.service';
+import { HistoricoModule } from './historico/historico.module';
 
 @Module({
   imports: [
@@ -32,8 +35,10 @@ import { Rota } from './rota/entities/rota.entity';
     VeiculoModule,
     ManutencaoModule,
     RotaModule,
+    HistoricoModule,
   ],
-  controllers: [VeiculoController, UserController, ManutencaoController,RotaController],
+  controllers: [VeiculoController, UserController, ManutencaoController,RotaController, HistoricoController],
+  providers: [HistoricoService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

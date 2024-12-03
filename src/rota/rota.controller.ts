@@ -27,7 +27,6 @@ import {
       return this.service.findAll(page, perPage || 10);
     }
 
-    // Endpoint para acessar o JSON da rota
   @Get(':id/json')
   async getRotaJson(@Param('id') id: number, @Res() res: Response) {
     const rota = await this.service.findOneById(id);

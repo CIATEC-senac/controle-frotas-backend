@@ -2,6 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
   MOTORISTA = 'motorista',
+  ADMINISTRATIVO = 'administrativo',
 }
 
 export enum UserType {
