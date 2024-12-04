@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Rota } from 'src/rota/entities/rota.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
   MOTORISTA = 'motorista',
@@ -55,4 +56,7 @@ export class User {
 
   @Column({ nullable: true })
   senha: string;
+
+  @OneToMany(() => Rota, (rota) => rota.motorista)
+  rotas: Rota[];
 }

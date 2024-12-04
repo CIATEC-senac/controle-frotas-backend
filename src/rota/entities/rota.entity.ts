@@ -1,60 +1,48 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
-import { Veiculo } from 'src/veiculo/entities/veiculo.entity'; 
+import { User } from 'src/user/entities/user.entity';
+import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+type Coordenadas = {
+  lat: number;
+  lng: number;
+};
 
 @Entity('rota')
 export class Rota {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', unique: true, nullable: false, default: 'default_name' }) 
-  name: string;
-
-  @Column({ default: true })
-  status: boolean;
-
-  @Column({ type: 'float', default: 0 })
+  @Column({ type: 'int', default: 0 })
   tempoTotal: number;
 
   @Column({ type: 'float', default: 0 })
   kmTotal: number;
 
-  @Column({ nullable: false })
-  destino: string;
-
-  @Column({ nullable: false })
-  origem: string;
+  @Column('json', { nullable: false })
+  trajeto: {
+    origem: string;
+    destino: string;
+    paradas: string[];
+  };
 
   @Column('json', { nullable: true })
-  waypoints: { latitude: number; longitude: number }[];
+  trajetoCoordenadas: {
+    origem: Coordenadas;
+    destino: Coordenadas;
+    paradas: Coordenadas[];
+  };
 
-  @Column({ type: 'json', nullable: true })
-  rotaJson: any;
-
-  @Column({ nullable: false })
-  capacidade: number;
-
-  @Column({ nullable: false })
-  empresa: string;
-
-  @ManyToOne(() => Veiculo, (veiculo) => veiculo.rotas, { nullable: false, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'placa' }) 
+  @ManyToOne(() => Veiculo)
+  @JoinColumn()
   veiculo: Veiculo;
 
-  @Column({ nullable: false })
-  placa: string;
-
-  @Column({ type: 'timestamp', nullable: true })
-  horaInicial: Date;
-
-  @Column({ type: 'timestamp', nullable: true })
-  horaFinal: Date;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async CapacidadeEmpresa() {
-    if (this.veiculo) {
-      this.capacidade = this.veiculo.capacidade;
-      this.empresa = this.veiculo.empresa;
-    }
-  }
+  @ManyToOne(() => User)
+  @JoinColumn()
+  motorista?: User;
 }

@@ -1,13 +1,27 @@
-import { IsNotEmpty, IsString, IsOptional, IsArray, IsInt, IsBoolean, IsNumber } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Rota } from 'src/rota/entities/rota.entity';
+import { User } from 'src/user/entities/user.entity';
 import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
+
+export class TrajetoDTO {
+  @IsString()
+  origem: string;
+
+  @IsString()
+  destino: string;
+
+  @IsString({ each: true })
+  paradas: string[];
+}
 
 export class RotaDTO {
   @IsOptional()
   id: number;
-
-  @IsBoolean()
-  status: boolean;
 
   @IsNumber()
   tempoTotal: number;
@@ -15,52 +29,28 @@ export class RotaDTO {
   @IsNumber()
   kmTotal: number;
 
-  @IsNotEmpty()
-  @IsString()
-  destino: string;
+  @ValidateNested()
+  trajeto: TrajetoDTO;
 
+  @IsNumber()
+  veiculo: number;
 
-  @IsNotEmpty()
-  @IsString()
-  origem: string;
-
-  @IsOptional()
-  @IsArray()
-  waypoints: string[];
-
-  @IsOptional()
-  @IsString()
-  rotaJson?: any;
-
-  @IsNotEmpty()
-  @IsString()
-  placa: string;
-
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsOptional()
-  horaInicial: Date;
-
-  @IsOptional()
-  horaFinal: Date;
-
+  @IsNumber()
+  motorista: number;
 
   toEntity(): Rota {
     const rota = new Rota();
     rota.id = this.id;
-    rota.status = this.status;
     rota.tempoTotal = this.tempoTotal;
     rota.kmTotal = this.kmTotal;
-    rota.destino = this.destino;
-    rota.origem = this.origem;
-    rota.waypoints = [];  // preencher isso no service
-    rota.rotaJson = this.rotaJson;
-    rota.placa = this.placa;
-    rota.name = this.name;
-    rota.horaInicial = this.horaInicial;
-    rota.horaFinal = this.horaFinal;
+    rota.trajeto = this.trajeto;
+
+    rota.veiculo = new Veiculo();
+    rota.veiculo.id = this.veiculo;
+
+    rota.motorista = new User();
+    rota.motorista.id = this.motorista;
+
     return rota;
   }
 }

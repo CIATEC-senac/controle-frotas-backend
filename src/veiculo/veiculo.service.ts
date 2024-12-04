@@ -64,11 +64,8 @@ export class VeiculoService {
     await this.repository.delete({ id });
   }
 
-  findAll(page: number, perPage: number): Promise<Veiculo[]> {
-    return this.repository.find({
-      take: perPage,
-      skip: perPage * (page - 1),
-    });
+  findAll(): Promise<Veiculo[]> {
+    return this.repository.find();
   }
 
   findOne(placa: string): Promise<Veiculo | null> {
