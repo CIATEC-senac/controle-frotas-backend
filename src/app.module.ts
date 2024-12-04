@@ -11,6 +11,12 @@ import { VeiculoModule } from './veiculo/veiculo.module';
 import { ManutencaoController } from './manutencao/manutencao.controller';
 import { ManutencaoModule } from './manutencao/manutencao.module';
 import { Manutencao } from './manutencao/entities/manutencao.entity';
+import { RotaModule } from './rota/rota.module';
+import { RotaController } from './rota/rota.controller';
+import { Rota } from './rota/entities/rota.entity';
+import { HistoricoController } from './historico/historico.controller';
+import { HistoricoModule } from './historico/historico.module';
+import { Historico } from './historico/entities/historico.entity';
 
 @Module({
   imports: [
@@ -21,20 +27,20 @@ import { Manutencao } from './manutencao/entities/manutencao.entity';
       username: 'admin',
       password: 'admin',
       database: 'frotas',
-      entities: [User, Veiculo, Manutencao],
+      entities: [User, Veiculo, Manutencao, Rota, Historico],
       synchronize: true,
     }),
     UserModule,
     AuthModule,
     VeiculoModule,
     ManutencaoModule,
+    HistoricoModule,
+    RotaModule,
   ],
-  controllers: [VeiculoController, UserController, ManutencaoController],
+  controllers: [VeiculoController, UserController, ManutencaoController,RotaController, HistoricoController],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AppLoggerMiddleware)
-      .forRoutes('user', 'veiculo', 'manutencao');
+    consumer.apply(AppLoggerMiddleware).forRoutes('user', 'veiculo','manutencao','rota', 'historico');
   }
 }

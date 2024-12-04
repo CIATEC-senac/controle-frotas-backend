@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn,OneToMany } from 'typeorm';
+import { Historico } from 'src/historico/entities/historico.entity';
 
 export enum UserRole {
   MOTORISTA = 'motorista',
@@ -54,4 +55,7 @@ export class User {
 
   @Column({ nullable: true })
   senha: string;
+
+  @OneToMany(() => Historico, (historico) => historico.motorista)
+  historicos: Historico[];
 }
