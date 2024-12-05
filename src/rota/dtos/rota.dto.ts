@@ -51,6 +51,9 @@ export class RotaDTO {
     rota.motorista = new User();
     rota.motorista.id = this.motorista;
 
+    rota.tempoTotal = 0;
+    rota.kmTotal = 0;
+
     return rota;
   }
 }

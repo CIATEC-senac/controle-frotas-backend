@@ -8,9 +8,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-type Coordenadas = {
-  lat: number;
-  lng: number;
+export type Coordenada = {
+  latitude: number;
+  longitude: number;
 };
 
 @Entity('rota')
@@ -33,9 +33,9 @@ export class Rota {
 
   @Column('json', { nullable: true })
   trajetoCoordenadas: {
-    origem: Coordenadas;
-    destino: Coordenadas;
-    paradas: Coordenadas[];
+    origem: Coordenada;
+    destino: Coordenada;
+    paradas: Coordenada[];
   };
 
   @ManyToOne(() => Veiculo)

@@ -50,7 +50,7 @@ export class RotaController {
   @Patch()
   async update(@Body() rota: RotaDTO, @Res() res: Response) {
     try {
-      const resultado = await this.service.update(rota.toEntity());
+      const resultado = await this.service.update(rota);
       res.status(HttpStatus.OK).json(resultado);
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
