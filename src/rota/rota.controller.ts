@@ -10,23 +10,23 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { VeiculoDTO } from './dtos/veiculo.dto';
-import { Veiculo } from './entities/veiculo.entity';
-import { VeiculoService } from './veiculo.service';
+import { RotaDTO } from './dtos/rota.dto';
+import { Rota } from './entities/rota.entity';
+import { RotaService } from './rota.service';
 
-@Controller('veiculo')
-export class VeiculoController {
-  constructor(private readonly service: VeiculoService) {}
+@Controller('rota')
+export class RotaController {
+  constructor(private readonly service: RotaService) {}
 
   @Get()
-  findAll(): Promise<Veiculo[]> {
+  findAll(): Promise<Rota[]> {
     return this.service.findAll();
   }
 
   @Post()
-  async create(@Body() veiculo: VeiculoDTO, @Res() res: Response) {
+  async create(@Body() rota: RotaDTO, @Res() res: Response) {
     try {
-      const result = await this.service.create(veiculo.toEntity());
+      const result = await this.service.create(rota);
       res.status(HttpStatus.CREATED).json(result);
     } catch (e) {
       res.status(HttpStatus.CONFLICT).send(e.message);
@@ -38,19 +38,19 @@ export class VeiculoController {
     @Param('id') id: number,
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
-    const veiculo = await this.service.findOneBy(id);
+    const rota = await this.service.findOneById(id);
 
-    if (veiculo != null) {
-      return res.send(veiculo);
+    if (rota != null) {
+      return res.send(rota);
     }
 
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Patch()
-  async update(@Body() veiculo: VeiculoDTO, @Res() res: Response) {
+  async update(@Body() rota: RotaDTO, @Res() res: Response) {
     try {
-      const resultado = await this.service.update(veiculo.toEntity());
+      const resultado = await this.service.update(rota);
       res.status(HttpStatus.OK).json(resultado);
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);

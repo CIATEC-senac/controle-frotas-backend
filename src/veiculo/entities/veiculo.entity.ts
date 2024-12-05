@@ -1,5 +1,13 @@
 import { Manutencao } from 'src/manutencao/entities/manutencao.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Rota } from 'src/rota/entities/rota.entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
 export enum VeiculoType {
   CAR = 'carro',
   VAN = 'van',
@@ -12,7 +20,7 @@ export class Veiculo {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 7 })
+  @Column({ length: 7, unique: true })
   placa: string;
 
   @Column({
@@ -39,4 +47,7 @@ export class Veiculo {
 
   @ManyToMany(() => Manutencao, (manutencao) => manutencao.veiculos)
   manutencoes: Manutencao[];
+
+  @OneToMany(() => Rota, (rota) => rota.veiculo)
+  rotas: Rota[];
 }

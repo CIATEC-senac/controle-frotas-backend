@@ -64,11 +64,34 @@ export class VeiculoService {
     await this.repository.delete({ id });
   }
 
-  findAll(page: number, perPage: number): Promise<Veiculo[]> {
-    return this.repository.find({
-      take: perPage,
-      skip: perPage * (page - 1),
-    });
+  findAll(): Promise<Veiculo[]> {
+    const today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
+    return this.repository
+      .find({
+        select: {
+          manutencoes: {
+            id: true,
+            data: true,
+          },
+        },
+        relations: {
+          manutencoes: true,
+        },
+      })
+      .then((veiculos) => {
+        return veiculos.map((veiculo) => {
+          veiculo.status = veiculo.manutencoes?.some((manutencao) => {
+            return manutencao.data.getTime() >= today.getTime();
+          });
+
+          return veiculo;
+        });
+      });
   }
 
   findOne(placa: string): Promise<Veiculo | null> {
