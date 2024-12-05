@@ -81,6 +81,7 @@ export class GeoCodeService {
           destination: destino,
           waypoints: `optimize:true|${waypointsString}`,
           key: process.env.GCP_APIKEY,
+          mode: 'driving',
         },
       })
       .then((response) => {
