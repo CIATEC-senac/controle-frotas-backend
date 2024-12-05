@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -20,11 +19,8 @@ export class VeiculoController {
   constructor(private readonly service: VeiculoService) {}
 
   @Get()
-  findAll(
-    @Query('page') page: number,
-    @Query('perPage') perPage: number,
-  ): Promise<Veiculo[]> {
-    return this.service.findAll(page, perPage || 10);
+  findAll(): Promise<Veiculo[]> {
+    return this.service.findAll();
   }
 
   @Post()

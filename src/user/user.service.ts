@@ -12,11 +12,8 @@ export class UserService {
     private repository: Repository<User>, //O Repository vai ser responsavel pelo CRUD do User no banco de dados, private repository pois só e acessado dentro da classe UserService.
   ) {}
 
-  findAll(page: number, perPage: number): Promise<User[]> {
-    return this.repository.find({
-      take: perPage,
-      skip: perPage * (page - 1),
-    });
+  findAll(): Promise<User[]> {
+    return this.repository.find();
   }
 
   //Popular o banco de dados com 1000 usuários com valores aleatorios

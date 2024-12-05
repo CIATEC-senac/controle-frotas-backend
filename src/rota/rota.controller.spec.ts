@@ -1,10 +1,9 @@
+import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Response } from 'express';
+import { RotaDTO } from './dtos/rota.dto';
 import { RotaController } from './rota.controller';
 import { RotaService } from './rota.service';
-import { RotaDTO } from './dtos/rota.dto';
-import { Rota } from './entities/rota.entity';
-import { HttpStatus } from '@nestjs/common';
-import { Response } from 'express';
 
 describe('RotaController', () => {
   let controller: RotaController;
@@ -37,28 +36,18 @@ describe('RotaController', () => {
       // Criando um DTO com dados fictícios
       const dto = new RotaDTO();
       dto.id = 1;
-      dto.origem = 'São Paulo';
-      dto.destino = 'Rio de Janeiro';
-      dto.status = true;
-      dto.empresa = 'Transportadora XYZ';
-      dto.tempoTotal = 3000;
-      dto.capacidade = 50;
-      dto.kmTotal = 450;
-      dto.waypoints = ['Campinas', 'São José dos Campos'];
-      dto.rotaJson = {
-        legs: [
-          {
-            distance: { text: '400 km', value: 400000 },
-            duration: { text: '6 horas', value: 21600 },
-            start_address: 'São Paulo',
-            end_address: 'Rio de Janeiro',
-          },
-        ],
-        overview_polyline: { points: 'abc123' },
+
+      dto.trajeto = {
+        paradas: ['Campinas', 'São José dos Campos'],
+        origem: 'São Paulo',
+        destino: 'Rio de Janeiro',
       };
 
+      dto.tempoTotal = 3000;
+      dto.kmTotal = 450;
+
       // Chamando o método `toEntity` para criar a instância de Rota
-      const entity = dto.toEntity(); 
+      const entity = dto.toEntity();
 
       // O resultado esperado que será retornado pelo mock
       const result = { id: 1, ...dto };
@@ -67,7 +56,10 @@ describe('RotaController', () => {
       (service.create as jest.Mock).mockResolvedValue(result);
 
       // Simulando a resposta da requisição
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
 
       // Chamando o controlador
       await controller.create(dto, res);
@@ -88,14 +80,15 @@ describe('RotaController', () => {
     it('should return the route with status 200', async () => {
       const dto = new RotaDTO();
       dto.id = 1;
-      dto.origem = 'São Paulo';
-      dto.destino = 'Rio de Janeiro';
-      dto.status = true;
-      dto.empresa = 'Transportadora XYZ';
+
+      dto.trajeto = {
+        paradas: ['Campinas', 'São José dos Campos'],
+        origem: 'São Paulo',
+        destino: 'Rio de Janeiro',
+      };
+
       dto.tempoTotal = 3000;
-      dto.capacidade = 50;
       dto.kmTotal = 450;
-      dto.waypoints = ['Campinas', 'São José dos Campos'];
 
       const rota = dto.toEntity();
 
@@ -103,7 +96,10 @@ describe('RotaController', () => {
       (service.findOneById as jest.Mock).mockResolvedValue(rota);
 
       // Simulando a resposta da requisição
-      const res = { send: jest.fn(), status: jest.fn().mockReturnThis() } as unknown as Response;
+      const res = {
+        send: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response;
 
       // Chamando o método do controlador
       await controller.find(1, res);
@@ -122,7 +118,10 @@ describe('RotaController', () => {
       // Mock do serviço retornando null (rota não encontrada)
       (service.findOneById as jest.Mock).mockResolvedValue(null);
 
-      const res = { status: jest.fn().mockReturnThis(), send: jest.fn() } as unknown as Response;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      } as unknown as Response;
 
       // Chamando o método do controlador
       await controller.find(1, res);
@@ -140,14 +139,15 @@ describe('RotaController', () => {
     it('should update a route and return status 200', async () => {
       const dto = new RotaDTO();
       dto.id = 1;
-      dto.origem = 'São Paulo';
-      dto.destino = 'Rio de Janeiro';
-      dto.status = true;
-      dto.empresa = 'Transportadora XYZ';
+
+      dto.trajeto = {
+        paradas: ['Campinas', 'São José dos Campos'],
+        origem: 'São Paulo',
+        destino: 'Rio de Janeiro',
+      };
+
       dto.tempoTotal = 3000;
-      dto.capacidade = 50;
       dto.kmTotal = 450;
-      dto.waypoints = ['Campinas', 'São José dos Campos'];
 
       const entity = dto.toEntity();
 
@@ -156,10 +156,13 @@ describe('RotaController', () => {
       // Mock para o serviço de atualização
       (service.update as jest.Mock).mockResolvedValue(result);
 
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
 
       // Chamando o controlador de update
-      await controller.update(1, dto, res);
+      await controller.update(dto, res);
 
       // Verificando se o método de update foi chamado corretamente
       expect(service.update).toHaveBeenCalledWith(entity);
@@ -181,7 +184,10 @@ describe('RotaController', () => {
       // Mock para o serviço de deleção
       (service.delete as jest.Mock).mockResolvedValue(undefined);
 
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() } as unknown as Response;
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      } as unknown as Response;
 
       // Chamando o método de deletar
       await controller.delete(1, res);

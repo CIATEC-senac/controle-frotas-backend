@@ -22,6 +22,9 @@ export class ManutencaoService {
       where: {
         data: Between(from, to),
       },
+      relations: {
+        veiculos: true,
+      },
     });
   }
 
@@ -43,11 +46,13 @@ export class ManutencaoService {
   }
 
   update(manutencao: Manutencao) {
-    return this.repository.update(
-      {
-        id: manutencao.id,
-      },
-      manutencao,
-    );
+    return this.repository.save(manutencao);
+
+    // return this.repository.update(
+    //   {
+    //     id: manutencao.id,
+    //   },
+    //   manutencao,
+    // );
   }
 }
