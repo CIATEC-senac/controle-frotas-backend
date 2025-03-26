@@ -1,5 +1,7 @@
+import { Type } from 'class-transformer';
 import {
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -21,20 +23,26 @@ export class TrajetoDTO {
 
 export class RotaDTO {
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   id: number;
 
+  @Type(() => Number)
   @IsNumber()
   tempoTotal: number;
 
+  @Type(() => Number)
   @IsNumber()
   kmTotal: number;
 
   @ValidateNested()
   trajeto: TrajetoDTO;
 
+  @Type(() => Number)
   @IsNumber()
   veiculo: number;
 
+  @Type(() => Number)
   @IsNumber()
   motorista: number;
 

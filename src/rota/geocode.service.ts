@@ -23,26 +23,27 @@ export class GeoCodeService {
       params: { address: address, key: process.env.GCP_APIKEY },
     });
 
+    
     return request
-      .then((response) => {
-        const { results } = JSON.parse(response.data);
-
-        if (!results || !results[0]) {
-          throw new Error(`Endereço não encontrado: ${address}`);
-        }
-
-        return <Coordenada>{
-          latitude: results[0].geometry.location.lat,
-          longitude: results[0].geometry.location.lng,
-        };
-      })
-      .catch((error) => {
-        throw new Error(
-          `Erro ao processar a resposta da API: ${error.message}`,
-        );
-      });
+    .then((response) => {
+      const { results } = JSON.parse(response.data);
+      
+      if (!results || !results[0]) {
+        throw new Error(`Endereço não encontrado: ${address}`);
+      }
+      
+      return <Coordenada>{
+        latitude: results[0].geometry.location.lat,
+        longitude: results[0].geometry.location.lng,
+      };
+    })
+    .catch((error) => {
+      throw new Error(
+        `Erro ao processar a resposta da API: ${address} ${error.message}`,
+      );
+    });
   }
-
+  
   public async getRoute(rota: Rota) {
     const origin = await this.getAddress(rota.trajeto?.origem);
     const destination = await this.getAddress(rota.trajeto?.destino);
