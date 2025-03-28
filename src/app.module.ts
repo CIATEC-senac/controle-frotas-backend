@@ -14,6 +14,9 @@ import { UserModule } from './user/user.module';
 import { Veiculo } from './veiculo/entities/veiculo.entity';
 import { VeiculoController } from './veiculo/veiculo.controller';
 import { VeiculoModule } from './veiculo/veiculo.module';
+import { HistoricoModule } from './historico/historico.module';
+import { Historico } from './historico/entities/historico.entity';
+import { HistoricoController } from './historico/historico.controller';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -23,7 +26,7 @@ import { VeiculoModule } from './veiculo/veiculo.module';
       username: 'admin',
       password: 'admin',
       database: 'frotas',
-      entities: [User, Veiculo, Manutencao, Rota],
+      entities: [User, Veiculo, Manutencao, Rota, Historico],
       synchronize: true,
     }),
     UserModule,
@@ -31,18 +34,20 @@ import { VeiculoModule } from './veiculo/veiculo.module';
     VeiculoModule,
     ManutencaoModule,
     RotaModule,
+    HistoricoModule,
   ],
   controllers: [
     VeiculoController,
     UserController,
     ManutencaoController,
     RotaController,
+    HistoricoController,
   ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AppLoggerMiddleware)
-      .forRoutes('user', 'veiculo', 'manutencao', 'rota');
+      .forRoutes('user', 'veiculo', 'manutencao', 'rota', 'historico');
   }
 }
