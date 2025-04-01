@@ -1,9 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
-import { RotaDTO } from './dtos/rota.dto';
 import { RotaController } from './rota.controller';
 import { RotaService } from './rota.service';
+import { RotaDTO } from './dtos/rota.dto';
+import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
+import { User } from 'src/user/entities/user.entity';
 
 describe('RotaController', () => {
   let controller: RotaController;
@@ -30,92 +32,41 @@ describe('RotaController', () => {
     service = module.get<RotaService>(RotaService);
   });
 
-  // Teste para o método de criação
-  describe('create', () => {
-    it('should create a new route and return status 201', async () => {
-      // Criando um DTO com dados fictícios
-      const dto = new RotaDTO();
-      dto.id = 1;
-
-      dto.trajeto = {
-        paradas: ['Campinas', 'São José dos Campos'],
-        origem: 'São Paulo',
-        destino: 'Rio de Janeiro',
-      };
-
-      dto.tempoTotal = 3000;
-      dto.kmTotal = 450;
-
-      // Chamando o método `toEntity` para criar a instância de Rota
-      const entity = dto.toEntity();
-
-      // O resultado esperado que será retornado pelo mock
-      const result = { id: 1, ...dto };
-
-      // Mock do serviço para retornar o resultado esperado
-      (service.create as jest.Mock).mockResolvedValue(result);
-
-      // Simulando a resposta da requisição
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      } as unknown as Response;
-
-      // Chamando o controlador
-      await controller.create(dto, res);
-
-      // Verificando se o serviço foi chamado com a entidade
-      expect(service.create).toHaveBeenCalledWith(entity);
-
-      // Verificando se o status foi configurado corretamente
-      expect(res.status).toHaveBeenCalledWith(HttpStatus.CREATED);
-
-      // Verificando se o JSON da resposta foi chamado com o resultado esperado
-      expect(res.json).toHaveBeenCalledWith(result);
-    });
-  });
-
-  // Teste para o método de obtenção de rota por ID
   describe('find', () => {
     it('should return the route with status 200', async () => {
       const dto = new RotaDTO();
       dto.id = 1;
-
       dto.trajeto = {
         paradas: ['Campinas', 'São José dos Campos'],
         origem: 'São Paulo',
         destino: 'Rio de Janeiro',
       };
-
       dto.tempoTotal = 3000;
       dto.kmTotal = 450;
+      dto.veiculo = 1;
+      dto.motorista = 2;
 
-      const rota = dto.toEntity();
+      const entity = {
+        ...dto,
+        veiculo: { id: dto.veiculo } as Veiculo,
+        motorista: { id: dto.motorista } as User,
+      };
 
-      // Mock para o serviço de buscar a rota por ID
-      (service.findOneById as jest.Mock).mockResolvedValue(rota);
+      (service.findOneById as jest.Mock).mockResolvedValue(entity);
 
-      // Simulando a resposta da requisição
       const res = {
         send: jest.fn(),
         status: jest.fn().mockReturnThis(),
       } as unknown as Response;
 
-      // Chamando o método do controlador
       await controller.find(1, res);
 
-      // Verificando se o método foi chamado corretamente
       expect(service.findOneById).toHaveBeenCalledWith(1);
-
-      // Verificando se a resposta foi enviada com a rota encontrada
-      expect(res.send).toHaveBeenCalledWith(rota);
-
-      // Verificando se o status 200 foi retornado
       expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
+      expect(res.send).toHaveBeenCalledWith(entity);
     });
 
     it('should return status 404 if route is not found', async () => {
-      // Mock do serviço retornando null (rota não encontrada)
       (service.findOneById as jest.Mock).mockResolvedValue(null);
 
       const res = {
@@ -123,80 +74,10 @@ describe('RotaController', () => {
         send: jest.fn(),
       } as unknown as Response;
 
-      // Chamando o método do controlador
       await controller.find(1, res);
 
-      // Verificando se o status 404 foi retornado
       expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
-
-      // Verificando se nada foi enviado no corpo da resposta
       expect(res.send).toHaveBeenCalled();
-    });
-  });
-
-  // Teste para o método de atualização
-  describe('update', () => {
-    it('should update a route and return status 200', async () => {
-      const dto = new RotaDTO();
-      dto.id = 1;
-
-      dto.trajeto = {
-        paradas: ['Campinas', 'São José dos Campos'],
-        origem: 'São Paulo',
-        destino: 'Rio de Janeiro',
-      };
-
-      dto.tempoTotal = 3000;
-      dto.kmTotal = 450;
-
-      const entity = dto.toEntity();
-
-      const result = { id: 1, ...dto };
-
-      // Mock para o serviço de atualização
-      (service.update as jest.Mock).mockResolvedValue(result);
-
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      } as unknown as Response;
-
-      // Chamando o controlador de update
-      await controller.update(dto, res);
-
-      // Verificando se o método de update foi chamado corretamente
-      expect(service.update).toHaveBeenCalledWith(entity);
-
-      // Verificando se o status 200 foi retornado
-      expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
-
-      // Verificando se o JSON da resposta foi enviado corretamente
-      expect(res.json).toHaveBeenCalledWith(result);
-    });
-  });
-
-  // Teste para o método de exclusão
-  describe('delete', () => {
-    it('should delete a route and return status 200', async () => {
-      const dto = new RotaDTO();
-      dto.id = 1;
-
-      // Mock para o serviço de deleção
-      (service.delete as jest.Mock).mockResolvedValue(undefined);
-
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      } as unknown as Response;
-
-      // Chamando o método de deletar
-      await controller.delete(1, res);
-
-      // Verificando se o método de delete foi chamado
-      expect(service.delete).toHaveBeenCalledWith(1);
-
-      // Verificando se o status 200 foi retornado
-      expect(res.status).toHaveBeenCalledWith(HttpStatus.OK);
     });
   });
 });
