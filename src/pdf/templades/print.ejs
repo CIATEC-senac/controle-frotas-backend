@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório de Rotas</title>
+
+    <style>
+      table {
+        width: 100%;
+      }
+
+      th {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body class="bg-purple-100">
+    <div class="m-8">
+      <h1 class="text-3xl mb-8">Listagem de passageiros</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Motorista</th>
+            <th>Rota</th>
+            <th>Horário</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (pdf.length > 0) { %> <% pdf.forEach(passenger =>
+          { %>
+          <tr>
+            <td><%= pdf.name %></td>
+            <td><%= pdf.rute %></td>
+            <td><%= pdf.time %></td>
+          </tr>
+          <% }); %> <% } %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"><%=pdf.length%> rotas</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </body>
+</html>

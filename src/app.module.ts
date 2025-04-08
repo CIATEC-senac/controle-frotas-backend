@@ -14,6 +14,7 @@ import { UserModule } from './user/user.module';
 import { Veiculo } from './veiculo/entities/veiculo.entity';
 import { VeiculoController } from './veiculo/veiculo.controller';
 import { VeiculoModule } from './veiculo/veiculo.module';
+import { PdfModule } from './pdf/pdf.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -31,6 +32,7 @@ import { VeiculoModule } from './veiculo/veiculo.module';
     VeiculoModule,
     ManutencaoModule,
     RotaModule,
+    PdfModule,
   ],
   controllers: [
     VeiculoController,
