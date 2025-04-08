@@ -1,38 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import * as ejs from 'ejs';
-import * as path from 'path';
+import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 
 @Injectable()
 export class PdfService {
-  async generatePdf(): Promise<Buffer> {
-    const pdf = [
-      { name: 'Joyce', rote: 7859, time: '18h00' },
-      { name: 'Brock', rote: 7859, time: '18h00' },
-      { name: 'Eve', rote: 7859, time: '18h00' },
-    ];
-
-    const templatePath = path.join(__dirname, '..', 'templates', 'print.ejs');
-
-    const html = await ejs.renderFile(templatePath, { pdf });
-
+  async generatePdf(url: string) {
     const browser = await puppeteer.launch({
       headless: true,
+      timeout: 2000,
+      executablePath: '/usr/bin/chromium',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+
+    new Logger().debug('launch');
 
     const page = await browser.newPage();
 
-    await page.setContent(html, {
-      waitUntil: 'networkidle0',
-    });
+    new Logger().debug('new page');
 
-    const pdfBuffer = await page.pdf({
-      printBackground: true,
-      format: 'Letter',
-    });
+    await page.goto(url, { waitUntil: 'networkidle0' });
+
+    new Logger().debug('goto');
+
+    const pdf = await page.pdf({ format: 'A4' });
+
+    new Logger().debug('pdf');
 
     await browser.close();
 
-    return Buffer.from(pdfBuffer);
+    new Logger().debug('close');
+
+    return pdf;
   }
 }

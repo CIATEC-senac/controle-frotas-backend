@@ -7,6 +7,12 @@
     <title>Relatório de Rotas</title>
 
     <style>
+      body {
+        width: 595px;
+        background-color: #fff;
+        margin: 0;
+      }
+      
       table {
         width: 100%;
       }
@@ -16,9 +22,9 @@
       }
     </style>
   </head>
-  <body class="bg-purple-100">
-    <div class="m-8">
-      <h1 class="text-3xl mb-8">Listagem de passageiros</h1>
+  <body>
+    <div>
+      <h1>Listagem de passageiros</h1>
       <table>
         <thead>
           <tr>
@@ -28,18 +34,18 @@
           </tr>
         </thead>
         <tbody>
-          <% if (pdf.length > 0) { %> <% pdf.forEach(passenger =>
-          { %>
+          
+          {{#each pdf}}
           <tr>
-            <td><%= pdf.name %></td>
-            <td><%= pdf.rute %></td>
-            <td><%= pdf.time %></td>
+            <td>{{this.name}}</td>
+            <td>{{this.route}}</td>
+            <td>{{this.time}}</td>
           </tr>
-          <% }); %> <% } %>
+          {{/each}}
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="2"><%=pdf.length%> rotas</td>
+            <td colspan="2">{{pdf.length}} rotas</td>
           </tr>
         </tfoot>
       </table>

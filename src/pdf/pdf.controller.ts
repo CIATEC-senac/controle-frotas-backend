@@ -1,18 +1,34 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Logger, Param, StreamableFile } from '@nestjs/common';
 import { PdfService } from './pdf.service';
+import { Render } from '@nestjs/common';
+import { Buffer } from 'buffer';
 
 @Controller('pdf')
 export class PdfController {
   constructor(private readonly pdfService: PdfService) {}
 
   @Get()
-  async getPdf(@Res() res: Response) {
-    const pdf = await this.pdfService.generatePdf();
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'inline; filename="relatorio.pdf"',
-    });
-    res.send(pdf);
+  async printPDF() {
+    const url = `http://localhost:3000/pdf/print/1`;
+
+    const data = await this.pdfService.generatePdf(url);
+
+    return new StreamableFile(Buffer.from(data));
+  }
+
+  @Get('print/:userId')
+  @Render('templates/route')
+  async renderPDF(@Param('userId') userId: string) {
+    new Logger().log(`User id: ${userId}`);
+
+    return {
+      pdf: [
+        {
+          name: 'Name',
+          route: 'Route',
+          time: 'Time',
+        },
+      ],
+    };
   }
 }
