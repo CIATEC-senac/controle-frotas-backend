@@ -14,19 +14,19 @@ import { UserModule } from './user/user.module';
 import { Veiculo } from './veiculo/entities/veiculo.entity';
 import { VeiculoController } from './veiculo/veiculo.controller';
 import { VeiculoModule } from './veiculo/veiculo.module';
-import { HistoricoModule } from './historico/historico.module';
-import { Historico } from './historico/entities/historico.entity';
-import { HistoricoController } from './historico/historico.controller';
+import { HistoryModule } from './history/history.module';
+import { History } from './history/entities/history.entity';
+import { HistoryController } from './history/history.controller';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'database', // Nome do serviço do PostgreSQL no docker-compose.yml
-      port: 5432,
-      username: 'admin',
-      password: 'admin',
-      database: 'frotas',
-      entities: [User, Veiculo, Manutencao, Rota, Historico],
+      host: process.env.DB_HOST, // Nome do serviço do PostgreSQL no docker-compose.yml
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [User, Veiculo, Manutencao, Rota, History],
       synchronize: true,
     }),
     UserModule,
@@ -34,14 +34,14 @@ import { HistoricoController } from './historico/historico.controller';
     VeiculoModule,
     ManutencaoModule,
     RotaModule,
-    HistoricoModule,
+    HistoryModule,
   ],
   controllers: [
     VeiculoController,
     UserController,
     ManutencaoController,
     RotaController,
-    HistoricoController,
+    HistoryController,
   ],
 })
 export class AppModule {
