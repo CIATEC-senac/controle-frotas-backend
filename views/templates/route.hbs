@@ -1,54 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang='pt-BR'>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset='UTF-8' />
     <title>Relatório de Rotas</title>
-
     <style>
-      body {
-        width: 595px;
-        background-color: #fff;
-        margin: 0;
-      }
-      
-      table {
-        width: 100%;
-      }
-
-      th {
-        text-align: left;
-      }
+      body { font-family: Arial, sans-serif; margin: 40px; color: #222; } h1,
+      h2, h3 { margin-bottom: 8px; } p { margin: 4px 0; } section {
+      margin-bottom: 30px; } table { width: 100%; border-collapse: collapse;
+      margin-top: 16px; } th, td { border: 1px solid #ccc; padding: 8px;
+      text-align: left; } th { background-color: #f2f2f2; } tfoot td {
+      font-weight: bold; }
     </style>
   </head>
   <body>
-    <div>
-      <h1>Listagem de passageiros</h1>
+    <section>
+      <h1>Relatório de Rotas</h1>
+      <p><b>Data de geração:</b> {{data}}</p>
+    </section>
+
+    <section>
+      <h2>Dados do Motorista</h2>
+      <p><b>Nome:</b> {{user.nome}}</p>
+      <p><b>Matrícula:</b> {{user.matricula}}</p>
+      <p><b>CNH:</b> {{user.cnh}}</p>
+      <p><b>Cargo:</b> {{user.cargo}}</p>
+    </section>
+
+    <section>
+      <h2>Veículo</h2>
+      <p><b>Modelo:</b> {{veiculo.modelo}}</p>
+      <p><b>Placa:</b> {{veiculo.placa}}</p>
+      <p><b>KM Atual:</b> {{veiculo.km}}</p>
+    </section>
+
+    <section>
+      <h2>Rotas Realizadas</h2>
       <table>
         <thead>
           <tr>
-            <th>Motorista</th>
             <th>Rota</th>
-            <th>Horário</th>
+            <th>Horário de Início</th>
+            <th>Horário de Término</th>
+            <th>Duração</th>
           </tr>
         </thead>
         <tbody>
-          
-          {{#each pdf}}
-          <tr>
-            <td>{{this.name}}</td>
-            <td>{{this.route}}</td>
-            <td>{{this.time}}</td>
-          </tr>
+          {{#each rotas}}
+            <tr>
+              <td>{{this.nome}}</td>
+              <td>{{this.horarioInicio}}</td>
+              <td>{{this.horarioFim}}</td>
+              <td>{{this.tempo}}</td>
+            </tr>
           {{/each}}
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="2">{{pdf.length}} rotas</td>
+            <td colspan='4'>Total de rotas: {{rotas.length}}</td>
           </tr>
         </tfoot>
       </table>
-    </div>
+    </section>
   </body>
 </html>
