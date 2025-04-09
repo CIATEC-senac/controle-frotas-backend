@@ -6,5 +6,5 @@ export class SignInDTO {
   cpf: string;
 
   @IsString()
-  senha: string;
+  password: string;
 }

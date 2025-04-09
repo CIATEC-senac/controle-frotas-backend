@@ -44,7 +44,7 @@ describe('RotaController', () => {
       };
 
       dto.estimatedDuration = 3000;
-      dto.elapsedTotal = 450;
+      dto.estimatedDistance = 450;
 
       // Chamando o método `toEntity` para criar a instância de Rota
       const entity = dto.toEntity();
@@ -88,7 +88,7 @@ describe('RotaController', () => {
       };
 
       dto.estimatedDuration = 3000;
-      dto.elapsedTotal = 450;
+      dto.estimatedDistance = 450;
 
       const rota = dto.toEntity();
 
@@ -147,7 +147,7 @@ describe('RotaController', () => {
       };
 
       dto.estimatedDuration = 3000;
-      dto.elapsedTotal = 450;
+      dto.estimatedDistance = 450;
 
       const entity = dto.toEntity();
 

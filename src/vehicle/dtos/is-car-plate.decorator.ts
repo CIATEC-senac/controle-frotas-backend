@@ -18,7 +18,7 @@ export function IsCarPlate(validationOptions?: ValidationOptions) {
             return false;
           }
           // Expressão regular para validar o formato da placa (ABC1D23)
-          const regex = /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/;
+          const regex = /^([A-Z]{3}[0-9][A-Z][0-9]{2})|([A-Z]{3}[0-9]{4})$/;
           return regex.test(value);
         },
         defaultMessage(args: ValidationArguments) {

@@ -1,4 +1,5 @@
 import {
+  IsDefined,
   IsNumber,
   IsOptional,
   IsString,
@@ -24,36 +25,31 @@ export class RouteDTO {
   @IsNumber()
   id: number;
 
+  @IsOptional()
   @IsNumber()
-  estimatedDuration: number;
+  estimatedDuration: number = 0;
 
+  @IsOptional()
   @IsNumber()
-  elapsedTotal: number;
+  estimatedDistance: number = 0;
 
   @ValidateNested()
   path: PathDTO;
 
-  @IsNumber()
-  vehicle: number;
+  @IsDefined()
+  vehicle: Vehicle;
 
-  @IsNumber()
-  driver: number;
+  @IsDefined()
+  driver: User;
 
   toEntity(): Route {
     const route = new Route();
     route.id = this.id;
-    route.estimatedDuration = this.estimatedDuration;
-    route.elapsedDistance = this.elapsedTotal;
     route.path = this.path;
-
-    route.vehicle = new Vehicle();
-    route.vehicle.id = this.vehicle;
-
-    route.driver = new User();
-    route.driver.id = this.driver;
-
+    route.vehicle = this.vehicle;
+    route.driver = this.driver;
     route.estimatedDuration = 0;
-    route.elapsedDistance = 0;
+    route.estimatedDistance = 0;
 
     return route;
   }

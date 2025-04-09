@@ -26,7 +26,7 @@ export class HistoryController {
     @Param('id') id: number,
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
-    const history = await this.service.findOne(id);
+    const history = await this.service.findOne(id).catch(() => null);
 
     if (history != null) {
       return res.send(history);

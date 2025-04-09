@@ -9,14 +9,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  static encrypt(senha: string) {
-    return Buffer.from(senha).toString('base64');
+  static encrypt(text: string) {
+    return Buffer.from(text).toString('base64');
   }
 
-  async signIn(cpf: string, senha: string): Promise<any> {
+  async signIn(cpf: string, password: string): Promise<any> {
     const user = await this.userService.findOne(cpf);
 
-    const passwordHash = AuthService.encrypt(senha);
+    const passwordHash = AuthService.encrypt(password);
 
     if (user?.password !== passwordHash) {
       throw new UnauthorizedException();
