@@ -1,26 +1,27 @@
-import { Rota } from 'src/rota/entities/rota.entity';
+import { Route } from 'src/route/entities/route.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
-  MOTORISTA = 'motorista',
-  ADMINISTRATIVO = 'administrativo',
+  ADMIN = 0,
+  MANAGER = 1,
+  DRIVER = 2,
 }
 
-export enum UserType {
-  FUNCIONARIO = 'funcionario',
-  TERCEIROS = 'terceiros',
+export enum UserSource {
+  INSOURCED = 0,
+  OUTSOURCED = 1,
 }
 
-@Entity('usuario')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ unique: true })
-  matricula: number;
+  registration: number;
 
   @Column({ length: 100 })
-  nome: string;
+  name: string;
 
   @Column({ length: 11, unique: true })
   cpf: string;
@@ -28,35 +29,27 @@ export class User {
   @Column({ length: 100, unique: true, nullable: true })
   email: string;
 
-  @Column({ name: 'data_adm' })
-  dataAdmissao: Date;
+  @Column()
+  admittedAt: Date;
 
   @Column({ default: true })
   status: boolean;
 
   @Column({ length: 100 })
-  obra: string;
+  site: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.MOTORISTA,
-  })
-  cargo: UserRole;
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.DRIVER })
+  role: UserRole;
 
   @Column({ length: 20, unique: true })
   cnh: string;
 
-  @Column({
-    type: 'enum',
-    enum: UserType,
-    default: UserType.TERCEIROS,
-  })
-  tipo: UserType;
+  @Column({ type: 'enum', enum: UserSource, default: UserSource.OUTSOURCED })
+  source: UserSource;
 
   @Column({ nullable: true })
-  senha: string;
+  password: string;
 
-  @OneToMany(() => Rota, (rota) => rota.motorista)
-  rotas: Rota[];
+  @OneToMany(() => Route, (route) => route.driver)
+  routes: Route[];
 }

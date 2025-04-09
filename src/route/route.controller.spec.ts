@@ -1,20 +1,20 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
-import { RotaDTO } from './dtos/rota.dto';
-import { RotaController } from './rota.controller';
-import { RotaService } from './rota.service';
+import { RouteDTO } from './dtos/route.dto';
+import { RouteController } from './route.controller';
+import { RouteService } from './route.service';
 
 describe('RotaController', () => {
-  let controller: RotaController;
-  let service: RotaService;
+  let controller: RouteController;
+  let service: RouteService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [RotaController],
+      controllers: [RouteController],
       providers: [
         {
-          provide: RotaService,
+          provide: RouteService,
           useValue: {
             findAll: jest.fn(),
             create: jest.fn(),
@@ -26,25 +26,25 @@ describe('RotaController', () => {
       ],
     }).compile();
 
-    controller = module.get<RotaController>(RotaController);
-    service = module.get<RotaService>(RotaService);
+    controller = module.get<RouteController>(RouteController);
+    service = module.get<RouteService>(RouteService);
   });
 
   // Teste para o método de criação
   describe('create', () => {
     it('should create a new route and return status 201', async () => {
       // Criando um DTO com dados fictícios
-      const dto = new RotaDTO();
+      const dto = new RouteDTO();
       dto.id = 1;
 
       dto.trajeto = {
-        paradas: ['Campinas', 'São José dos Campos'],
-        origem: 'São Paulo',
-        destino: 'Rio de Janeiro',
+        stops: ['Campinas', 'São José dos Campos'],
+        origin: 'São Paulo',
+        destination: 'Rio de Janeiro',
       };
 
-      dto.tempoTotal = 3000;
-      dto.kmTotal = 450;
+      dto.estimatedDuration = 3000;
+      dto.elapsedTotal = 450;
 
       // Chamando o método `toEntity` para criar a instância de Rota
       const entity = dto.toEntity();
@@ -78,17 +78,17 @@ describe('RotaController', () => {
   // Teste para o método de obtenção de rota por ID
   describe('find', () => {
     it('should return the route with status 200', async () => {
-      const dto = new RotaDTO();
+      const dto = new RouteDTO();
       dto.id = 1;
 
       dto.trajeto = {
-        paradas: ['Campinas', 'São José dos Campos'],
-        origem: 'São Paulo',
-        destino: 'Rio de Janeiro',
+        stops: ['Campinas', 'São José dos Campos'],
+        origin: 'São Paulo',
+        destination: 'Rio de Janeiro',
       };
 
-      dto.tempoTotal = 3000;
-      dto.kmTotal = 450;
+      dto.estimatedDuration = 3000;
+      dto.elapsedTotal = 450;
 
       const rota = dto.toEntity();
 
@@ -137,17 +137,17 @@ describe('RotaController', () => {
   // Teste para o método de atualização
   describe('update', () => {
     it('should update a route and return status 200', async () => {
-      const dto = new RotaDTO();
+      const dto = new RouteDTO();
       dto.id = 1;
 
       dto.trajeto = {
-        paradas: ['Campinas', 'São José dos Campos'],
-        origem: 'São Paulo',
-        destino: 'Rio de Janeiro',
+        stops: ['Campinas', 'São José dos Campos'],
+        origin: 'São Paulo',
+        destination: 'Rio de Janeiro',
       };
 
-      dto.tempoTotal = 3000;
-      dto.kmTotal = 450;
+      dto.estimatedDuration = 3000;
+      dto.elapsedTotal = 450;
 
       const entity = dto.toEntity();
 
@@ -178,7 +178,7 @@ describe('RotaController', () => {
   // Teste para o método de exclusão
   describe('delete', () => {
     it('should delete a route and return status 200', async () => {
-      const dto = new RotaDTO();
+      const dto = new RouteDTO();
       dto.id = 1;
 
       // Mock para o serviço de deleção

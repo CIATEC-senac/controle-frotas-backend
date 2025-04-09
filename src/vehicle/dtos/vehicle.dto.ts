@@ -7,15 +7,15 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { Manutencao } from 'src/manutencao/entities/manutencao.entity';
+import { Maintenance } from 'src/maintenance/entities/maintenance.entity';
 import { OneToMany } from 'typeorm';
-import { Veiculo, VeiculoType } from '../entities/veiculo.entity';
+import { Vehicle, VehicleType } from '../entities/vehicle.entity';
 import { IsCarPlate } from './is-car-plate.decorator';
 
-export class VeiculoDTO {
+export class VehicleDTO {
   @IsOptional()
-  @IsEnum(VeiculoType)
-  modelo: VeiculoType = VeiculoType.BUS;
+  @IsEnum(VehicleType)
+  type: VehicleType = VehicleType.BUS;
 
   @IsOptional()
   @Type(() => Number)
@@ -24,39 +24,39 @@ export class VeiculoDTO {
 
   @Type(() => Number)
   @IsNumber()
-  capacidade: number;
+  capacity: number;
 
   @Type(() => Number)
   @IsNumber()
-  ano: number;
+  year: number;
 
   @IsCarPlate()
-  placa: string;
+  plate: string;
 
   @IsString()
   @MaxLength(100)
-  empresa: string;
+  enterprise: string;
 
   @IsString()
   @MaxLength(100)
-  obra: string;
+  site: string;
 
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   status: boolean;
 
-  @OneToMany(() => Manutencao, (manutencao) => manutencao.veiculos)
-  manutencoes: Manutencao[];
+  @OneToMany(() => Maintenance, (maintenance) => maintenance.vehicles)
+  maintenances: Maintenance[];
 
   toEntity() {
-    const entity = new Veiculo();
+    const entity = new Vehicle();
     entity.id = this.id;
-    entity.modelo = this.modelo;
-    entity.capacidade = this.capacidade;
-    entity.ano = this.ano;
-    entity.placa = this.placa;
-    entity.empresa = this.empresa;
-    entity.obra = this.obra;
+    entity.model = this.type;
+    entity.capacity = this.capacity;
+    entity.year = this.year;
+    entity.plate = this.plate;
+    entity.enterprise = this.enterprise;
+    entity.site = this.site;
     entity.status = this.status;
 
     return entity;

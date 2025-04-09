@@ -18,11 +18,11 @@ export class AuthService {
 
     const senhaHash = AuthService.encrypt(senha);
 
-    if (user?.senha !== senhaHash) {
+    if (user?.password !== senhaHash) {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, matricula: user.matricula };
+    const payload = { sub: user.id, matricula: user.registration };
 
     return {
       token: await this.jwtService.signAsync(payload),

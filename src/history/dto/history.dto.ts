@@ -7,14 +7,14 @@ import {
   IsDate,
   IsDefined,
 } from 'class-validator';
-import { Rota } from 'src/rota/entities/rota.entity';
+import { Route } from 'src/route/entities/route.entity';
 import {
   Coordinates,
   History,
   HistoryStatus,
 } from '../entities/history.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
+import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 
 export class PathCoordinatesDTO {
   @IsOptional()
@@ -81,10 +81,10 @@ export class HistoryDTO {
   driver: User;
 
   @IsDefined()
-  vehicle: Veiculo;
+  vehicle: Vehicle;
 
   @IsDefined()
-  route: Rota;
+  route: Route;
 
   toEntity(): History {
     const history = new History();

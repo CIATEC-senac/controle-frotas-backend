@@ -11,23 +11,23 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ManutencaoDTO } from './dtos/manutencao.dto';
-import { Manutencao } from './entities/manutencao.entity';
-import { ManutencaoService } from './manutencao.service';
+import { MaintenanceDTO } from './dtos/maintenance.dto';
+import { Maintenance } from './entities/maintenance.entity';
+import { MaintenanceService } from './maintenance.service';
 
-@Controller('manutencao')
-export class ManutencaoController {
-  constructor(private readonly service: ManutencaoService) {}
+@Controller('maintenance')
+export class MaintenanceController {
+  constructor(private readonly service: MaintenanceService) {}
 
   @Get()
-  findAll(@Query('from') from: Date): Promise<Manutencao[]> {
+  findAll(@Query('from') from: Date): Promise<Maintenance[]> {
     return this.service.findAll(from);
   }
 
   @Post()
-  async create(@Body() manutencao: ManutencaoDTO, @Res() res: Response) {
+  async create(@Body() maintenance: MaintenanceDTO, @Res() res: Response) {
     try {
-      const result = await this.service.create(manutencao.toEntity());
+      const result = await this.service.create(maintenance.toEntity());
       res.status(HttpStatus.CREATED).json(result);
     } catch (e) {
       res.status(HttpStatus.CONFLICT).send(e.message);
@@ -39,19 +39,19 @@ export class ManutencaoController {
     @Param('id') id: number,
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
-    const manutencao = await this.service.findOneBy(id);
+    const maintenance = await this.service.findOneBy(id);
 
-    if (manutencao != null) {
-      return res.send(manutencao);
+    if (maintenance != null) {
+      return res.send(maintenance);
     }
 
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Patch()
-  async update(@Body() manutencao: ManutencaoDTO, @Res() res: Response) {
+  async update(@Body() maintenance: MaintenanceDTO, @Res() res: Response) {
     try {
-      const resultado = await this.service.update(manutencao.toEntity());
+      const resultado = await this.service.update(maintenance.toEntity());
       res.status(HttpStatus.OK).json(resultado);
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
