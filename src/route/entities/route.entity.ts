@@ -22,7 +22,7 @@ export class Route {
   estimatedDuration: number;
 
   @Column({ type: 'float', default: 0 })
-  elapsedDistance: number;
+  estimatedDistance: number;
 
   @Column('json', { nullable: false })
   path: {

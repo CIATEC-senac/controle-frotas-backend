@@ -50,7 +50,7 @@ export class RouteService {
 
     for (const leg of googleRoute.legs) {
       route.estimatedDuration += leg.duration.value;
-      route.elapsedDistance += leg.distance.value;
+      route.estimatedDistance += leg.distance.value;
     }
 
     return await this.repository.save(route);

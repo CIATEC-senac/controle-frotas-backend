@@ -10,7 +10,7 @@ export class AuthController {
   @Post('login')
   signIn(@Body() signInDto: SignInDTO) {
     return this.authService
-      .signIn(signInDto.cpf, signInDto.senha)
+      .signIn(signInDto.cpf, signInDto.password)
       .catch((e) => {
         throw e;
       });

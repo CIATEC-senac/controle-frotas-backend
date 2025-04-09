@@ -12,7 +12,9 @@ export class UserService {
   ) {}
 
   findAll(): Promise<User[]> {
-    return this.repository.find();
+    return this.repository.find({
+      select: ['id', 'name', 'admittedAt', 'role', 'routes'],
+    });
   }
 
   findOne(cpf: string): Promise<User | null> {
@@ -32,12 +34,7 @@ export class UserService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update({ password: senha, ...user }: User) {
-    return this.repository.update(
-      {
-        id: user.id,
-      },
-      user,
-    );
+  update({ password, ...user }: User) {
+    return this.repository.update({ id: user.id }, user);
   }
 }
