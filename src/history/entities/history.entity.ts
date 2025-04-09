@@ -1,6 +1,6 @@
-import { Rota } from 'src/rota/entities/rota.entity';
+import { Route } from 'src/route/entities/route.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Veiculo } from 'src/veiculo/entities/veiculo.entity';
+import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export type Coordinates = {
@@ -60,12 +60,12 @@ export class History {
   @Column({ type: 'timestamp' })
   endedAt: Date;
 
-  @ManyToOne(() => Rota, (route) => route.id)
-  route: Rota;
+  @ManyToOne(() => Route, (route) => route.id)
+  route: Route;
 
   @ManyToOne(() => User, (user) => user.id)
   driver: User;
 
-  @ManyToOne(() => Veiculo, (vehicle) => vehicle.id)
-  vehicle: Veiculo;
+  @ManyToOne(() => Vehicle, (vehicle) => vehicle.id)
+  vehicle: Vehicle;
 }

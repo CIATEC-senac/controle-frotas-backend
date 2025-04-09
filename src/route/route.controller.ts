@@ -10,23 +10,23 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { RotaDTO } from './dtos/rota.dto';
-import { Rota } from './entities/rota.entity';
-import { RotaService } from './rota.service';
+import { RouteDTO } from './dtos/route.dto';
+import { Route } from './entities/route.entity';
+import { RouteService as RouteService } from './route.service';
 
-@Controller('rota')
-export class RotaController {
-  constructor(private readonly service: RotaService) {}
+@Controller('route')
+export class RouteController {
+  constructor(private readonly service: RouteService) {}
 
   @Get()
-  findAll(): Promise<Rota[]> {
+  findAll(): Promise<Route[]> {
     return this.service.findAll();
   }
 
   @Post()
-  async create(@Body() rota: RotaDTO, @Res() res: Response) {
+  async create(@Body() route: RouteDTO, @Res() res: Response) {
     try {
-      const result = await this.service.create(rota);
+      const result = await this.service.create(route);
       res.status(HttpStatus.CREATED).json(result);
     } catch (e) {
       res.status(HttpStatus.CONFLICT).send(e.message);
@@ -38,20 +38,20 @@ export class RotaController {
     @Param('id') id: number,
     @Res() res: Response,
   ): Promise<Response<any, Record<string, any>>> {
-    const rota = await this.service.findOneById(id);
+    const route = await this.service.findOneById(id);
 
-    if (rota != null) {
-      return res.send(rota);
+    if (route != null) {
+      return res.send(route);
     }
 
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Patch()
-  async update(@Body() rota: RotaDTO, @Res() res: Response) {
+  async update(@Body() route: RouteDTO, @Res() res: Response) {
     try {
-      const resultado = await this.service.update(rota);
-      res.status(HttpStatus.OK).json(resultado);
+      const result = await this.service.update(route);
+      res.status(HttpStatus.OK).json(result);
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
     }
@@ -60,8 +60,8 @@ export class RotaController {
   @Delete(':id')
   async delete(@Param('id') id: number, @Res() res: Response) {
     try {
-      const resultado = await this.service.delete(id);
-      res.status(HttpStatus.OK).json(resultado);
+      const result = await this.service.delete(id);
+      res.status(HttpStatus.OK).json(result);
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
     }

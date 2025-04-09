@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { HistoryService } from './history.service';
 import { HistoryController } from './history.controller';
 import { History } from './entities/history.entity';
-import { RotaModule } from 'src/rota/rota.module';
+import { RouteModule } from 'src/route/route.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([History]), RotaModule],
+  imports: [TypeOrmModule.forFeature([History]), RouteModule],
   providers: [HistoryService],
   controllers: [HistoryController],
   exports: [HistoryService],

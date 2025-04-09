@@ -12,7 +12,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { AuthService } from 'src/auth/auth.service';
-import { User, UserRole, UserType } from '../entities/user.entity';
+import { User, UserRole, UserSource } from '../entities/user.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -20,11 +20,11 @@ export class UserDTO {
 
   @Type(() => Number)
   @IsNumber()
-  matricula: number;
+  registration: number;
 
   @IsString()
   @MaxLength(100)
-  nome: string;
+  name: string;
 
   @IsNumberString()
   @MaxLength(11)
@@ -36,45 +36,45 @@ export class UserDTO {
 
   @Type(() => Date)
   @IsDate()
-  dataAdmissao: Date;
+  amittedAt: Date;
 
   @IsBoolean()
   @Transform(({ value }) => value === 'true' || value === true)
   status: boolean;
 
   @IsNotEmpty()
-  obra: string;
+  site: string;
 
   @IsOptional()
   @IsEnum(UserRole)
-  cargo: UserRole = UserRole.MOTORISTA;
+  role: UserRole = UserRole.DRIVER;
 
   @Type(() => Number)
   @IsNumber()
   cnh: string;
 
   @IsOptional()
-  @IsEnum(UserType)
-  tipo: UserType = UserType.TERCEIROS;
+  @IsEnum(UserSource)
+  source: UserSource = UserSource.OUTSOURCED;
 
   @IsOptional()
   @IsString()
-  senha: string = 'senha';
+  password: string = 'senha';
 
   toEntity() {
     const entity = new User();
     entity.id = this.id;
-    entity.matricula = this.matricula;
-    entity.nome = this.nome;
+    entity.registration = this.registration;
+    entity.name = this.name;
     entity.cpf = this.cpf;
     entity.email = this.email;
-    entity.dataAdmissao = this.dataAdmissao;
+    entity.admittedAt = this.amittedAt;
     entity.status = this.status;
-    entity.obra = this.obra;
-    entity.cargo = this.cargo;
+    entity.site = this.site;
+    entity.role = this.role;
     entity.cnh = this.cnh;
-    entity.tipo = this.tipo;
-    entity.senha = AuthService.encrypt(this.senha);
+    entity.source = this.source;
+    entity.password = AuthService.encrypt(this.password);
 
     return entity;
   }

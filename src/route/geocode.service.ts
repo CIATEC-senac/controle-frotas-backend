@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Axios } from 'axios';
 import * as http from 'http';
 import * as https from 'https';
-import { Coordenada, Rota } from 'src/rota/entities/rota.entity';
+import { Coordinates } from 'src/history/entities/history.entity';
+import { Coordinate, Route } from 'src/route/entities/route.entity';
 
 @Injectable()
 export class GeoCodeService {
@@ -18,7 +19,7 @@ export class GeoCodeService {
   }
 
   // Função para geocodificar um endereço e retornar coordenadas
-  public async getAddress(address: string): Promise<Coordenada> {
+  public async getAddress(address: string): Promise<Coordinate> {
     const request = this.axios.get('/maps/api/geocode/json', {
       params: { address: address, key: process.env.GCP_APIKEY },
     });
@@ -31,9 +32,9 @@ export class GeoCodeService {
           throw new Error(`Endereço não encontrado: ${address}`);
         }
 
-        return <Coordenada>{
-          latitude: results[0].geometry.location.lat,
-          longitude: results[0].geometry.location.lng,
+        return <Coordinate>{
+          lat: results[0].geometry.location.lat,
+          lng: results[0].geometry.location.lng,
         };
       })
       .catch((error) => {
@@ -43,42 +44,42 @@ export class GeoCodeService {
       });
   }
 
-  public async getRoute(rota: Rota) {
-    const origin = await this.getAddress(rota.trajeto?.origem);
-    const destination = await this.getAddress(rota.trajeto?.destino);
+  public async getRoute(route: Route) {
+    const origin = await this.getAddress(route.path?.origin);
+    const destination = await this.getAddress(route.path?.destination);
 
     // Geocodificar os waypoints (endereços) e converte para coordenadas
     const geocodedWaypoints = await Promise.all(
-      rota.trajeto.paradas.map((parada) => this.getAddress(parada)),
+      route.path.stops.map((stop) => this.getAddress(stop)),
     );
 
-    rota.trajetoCoordenadas = {
-      paradas: geocodedWaypoints,
-      origem: origin,
-      destino: destination,
+    route.pathCoordinates = {
+      stops: geocodedWaypoints,
+      origin: origin,
+      destination: destination,
     };
 
     return await this.getGoogleRoute(
-      rota.trajeto.origem,
-      rota.trajeto.destino,
+      route.path.origin,
+      route.path.destination,
       geocodedWaypoints,
     );
   }
 
   public async getGoogleRoute(
-    origem: string,
-    destino: string,
-    waypoints: Coordenada[],
+    origin: string,
+    destination: string,
+    waypoints: Coordinates[],
   ) {
     const waypointsString = waypoints
-      .map((wp) => `${wp.latitude},${wp.longitude}`)
+      .map((wp) => `${wp.lat},${wp.lng}`)
       .join('|');
 
     return this.axios
       .get('/maps/api/directions/json', {
         params: {
-          origin: origem,
-          destination: destino,
+          origin: origin,
+          destination: destination,
           waypoints: `optimize:true|${waypointsString}`,
           key: process.env.GCP_APIKEY,
           mode: 'driving',
