@@ -1,4 +1,4 @@
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -18,7 +18,6 @@ export class UserDTO {
   @IsOptional()
   id: number;
 
-  @Type(() => Number)
   @IsNumber()
   registration: number;
 
@@ -34,9 +33,8 @@ export class UserDTO {
   @IsEmail()
   email: string;
 
-  @Type(() => Date)
   @IsDate()
-  amittedAt: Date;
+  admittedAt: Date;
 
   @IsBoolean()
   @Transform(({ value }) => value === 'true' || value === true)
@@ -49,8 +47,7 @@ export class UserDTO {
   @IsEnum(UserRole)
   role: UserRole = UserRole.DRIVER;
 
-  @Type(() => Number)
-  @IsNumber()
+  @IsString()
   cnh: string;
 
   @IsOptional()
@@ -68,7 +65,7 @@ export class UserDTO {
     entity.name = this.name;
     entity.cpf = this.cpf;
     entity.email = this.email;
-    entity.admittedAt = this.amittedAt;
+    entity.admittedAt = this.admittedAt;
     entity.status = this.status;
     entity.site = this.site;
     entity.role = this.role;

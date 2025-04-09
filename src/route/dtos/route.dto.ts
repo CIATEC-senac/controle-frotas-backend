@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import {
   IsNumber,
   IsOptional,
@@ -22,26 +21,21 @@ export class PathDTO {
 
 export class RouteDTO {
   @IsOptional()
-  @Type(() => Number)
   @IsNumber()
   id: number;
 
-  @Type(() => Number)
   @IsNumber()
   estimatedDuration: number;
 
-  @Type(() => Number)
   @IsNumber()
   elapsedTotal: number;
 
   @ValidateNested()
   path: PathDTO;
 
-  @Type(() => Number)
   @IsNumber()
   vehicle: number;
 
-  @Type(() => Number)
   @IsNumber()
   driver: number;
 
