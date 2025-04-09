@@ -16,13 +16,17 @@ export class AuthService {
   async signIn(cpf: string, senha: string): Promise<any> {
     const user = await this.userService.findOne(cpf);
 
-    const senhaHash = AuthService.encrypt(senha);
+    const passwordHash = AuthService.encrypt(senha);
 
-    if (user?.password !== senhaHash) {
+    if (user?.password !== passwordHash) {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, matricula: user.registration };
+    const payload = {
+      sub: user.id,
+      registration: user.registration,
+      role: user.role,
+    };
 
     return {
       token: await this.jwtService.signAsync(payload),
