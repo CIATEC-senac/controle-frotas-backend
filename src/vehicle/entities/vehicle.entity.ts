@@ -1,9 +1,11 @@
+import { Enterprise } from 'src/enterprise/entities/enterprise.entity';
 import { Maintenance } from 'src/maintenance/entities/maintenance.entity';
 import { Route } from 'src/route/entities/route.entity';
 import {
   Column,
   Entity,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -28,10 +30,15 @@ export class Vehicle {
     enum: VehicleType,
     default: VehicleType.BUS,
   })
-  model: VehicleType;
+  type: VehicleType;
 
-  @Column({ length: 100 })
-  enterprise: string;
+  @Column({ length: 30, nullable: true })
+  model: string;
+
+  @ManyToOne(() => Enterprise, (enterprise) => enterprise.id, {
+    nullable: true,
+  })
+  enterprise: Enterprise;
 
   @Column({ default: true })
   status: boolean;

@@ -75,13 +75,17 @@ export class RouteService {
   findAll(): Promise<Route[]> {
     return this.repository.find({
       select: {
-        driver: { name: true, id: true },
+        driver: {
+          name: true,
+          id: true,
+          enterprise: { id: true, name: true },
+        },
         vehicle: {
           site: true,
           id: true,
-          enterprise: true,
           plate: true,
           capacity: true,
+          enterprise: { id: true, name: true },
         },
       },
       relations: { vehicle: true, driver: true },
@@ -92,11 +96,15 @@ export class RouteService {
     return this.repository.findOne({
       where: { id },
       select: {
-        driver: { name: true, id: true },
+        driver: {
+          name: true,
+          id: true,
+          enterprise: { id: true, name: true },
+        },
         vehicle: {
           id: true,
           site: true,
-          enterprise: true,
+          enterprise: { id: true, name: true },
           plate: true,
           capacity: true,
         },

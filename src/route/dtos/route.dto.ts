@@ -5,9 +5,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { User } from 'src/user/entities/user.entity';
-import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 import { Route } from '../entities/route.entity';
+import { VehicleDTO } from 'src/vehicle/dtos/vehicle.dto';
+import { UserDTO } from 'src/user/dtos/user.dto';
 
 export class PathDTO {
   @IsString()
@@ -37,17 +37,17 @@ export class RouteDTO {
   path: PathDTO;
 
   @IsDefined()
-  vehicle: Vehicle;
+  vehicle: VehicleDTO;
 
   @IsDefined()
-  driver: User;
+  driver: UserDTO;
 
   toEntity(): Route {
     const route = new Route();
     route.id = this.id;
     route.path = this.path;
-    route.vehicle = this.vehicle;
-    route.driver = this.driver;
+    route.vehicle = this.vehicle.toEntity();
+    route.driver = this.driver.toEntity();
     route.estimatedDuration = 0;
     route.estimatedDistance = 0;
 

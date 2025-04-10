@@ -7,11 +7,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 import { Maintenance, MaintenanceType } from '../entities/maintenance.entity';
+import { VehicleDTO } from 'src/vehicle/dtos/vehicle.dto';
 
 export class MaintenanceDTO {
-  @IsOptional()
   @IsNumber()
   id: number;
 
@@ -27,7 +26,7 @@ export class MaintenanceDTO {
 
   @IsArray()
   @IsNotEmpty()
-  vehicles: number[];
+  vehicles: VehicleDTO[];
 
   toEntity() {
     const entity = new Maintenance();
@@ -36,12 +35,7 @@ export class MaintenanceDTO {
     entity.type = this.type;
     entity.date = this.date;
 
-    entity.vehicles = this.vehicles.map((id) => {
-      const vehicle = new Vehicle();
-      vehicle.id = id;
-
-      return vehicle;
-    });
+    entity.vehicles = this.vehicles.map((vehicle) => vehicle.toEntity());
 
     return entity;
   }

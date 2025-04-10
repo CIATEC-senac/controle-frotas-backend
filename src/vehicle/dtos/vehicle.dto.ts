@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -9,6 +10,7 @@ import {
 } from 'class-validator';
 import { Vehicle, VehicleType } from '../entities/vehicle.entity';
 import { IsCarPlate } from './is-car-plate.decorator';
+import { EnterpriseDTO } from 'src/enterprise/dtos/enterprise.dto';
 
 export class VehicleDTO {
   @IsOptional()
@@ -29,12 +31,11 @@ export class VehicleDTO {
   plate: string;
 
   @IsString()
-  @MaxLength(100)
-  enterprise: string;
+  @MaxLength(30)
+  model: string;
 
-  @IsString()
-  @MaxLength(100)
-  site: string;
+  @IsDefined()
+  enterprise: EnterpriseDTO;
 
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
@@ -43,13 +44,14 @@ export class VehicleDTO {
   toEntity() {
     const entity = new Vehicle();
     entity.id = this.id;
-    entity.model = this.type;
+    entity.type = this.type;
     entity.capacity = this.capacity;
     entity.year = this.year;
     entity.plate = this.plate;
-    entity.enterprise = this.enterprise;
-    entity.site = this.site;
+    entity.model = this.model;
     entity.status = this.status;
+
+    entity.enterprise = this.enterprise.toEntity();
 
     return entity;
   }
