@@ -15,7 +15,7 @@ export class UserService {
     return this.repository.find({
       select: [
         'id',
-        'registry',
+        'registration',
         'name',
         'cpf',
         'email',
@@ -34,7 +34,10 @@ export class UserService {
   }
 
   findOneById(id: number): Promise<User | null> {
-    return this.repository.findOneBy({ id });
+    return this.repository.findOne({
+      select: { id: true, name: true, role: true },
+      where: { id },
+    });
   }
 
   async delete(id: number): Promise<void> {

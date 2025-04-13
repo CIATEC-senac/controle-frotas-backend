@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDefined,
@@ -34,11 +33,11 @@ export class VehicleDTO {
   @MaxLength(30)
   model: string;
 
+  @IsOptional()
   @IsDefined()
-  enterprise: EnterpriseDTO;
+  enterprise?: EnterpriseDTO;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
   status: boolean;
 
   toEntity() {
@@ -51,7 +50,7 @@ export class VehicleDTO {
     entity.model = this.model;
     entity.status = this.status;
 
-    entity.enterprise = this.enterprise.toEntity();
+    entity.enterprise = this.enterprise ? this.enterprise.toEntity() : null;
 
     return entity;
   }

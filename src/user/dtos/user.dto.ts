@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -20,7 +19,7 @@ export class UserDTO {
   id: number;
 
   @IsNumber()
-  registry: number;
+  registration: number;
 
   @IsString()
   @MaxLength(100)
@@ -38,7 +37,6 @@ export class UserDTO {
   admittedAt: Date;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
   status: boolean;
 
   @IsEnum(UserRole)
@@ -53,15 +51,16 @@ export class UserDTO {
 
   @IsOptional()
   @IsString()
-  password: string = 'senha';
+  password: string;
 
+  @IsOptional()
   @IsDefined()
-  enterprise: EnterpriseDTO;
+  enterprise?: EnterpriseDTO;
 
   toEntity() {
     const entity = new User();
     entity.id = this.id;
-    entity.registry = this.registry;
+    entity.registration = this.registration;
     entity.name = this.name;
     entity.cpf = this.cpf;
     entity.email = this.email;
@@ -70,8 +69,8 @@ export class UserDTO {
     entity.role = this.role;
     entity.cnh = this.cnh;
     entity.source = this.source;
-    entity.password = AuthService.encrypt(this.password);
-    entity.enterprise = this.enterprise.toEntity();
+    entity.password = this.password ? AuthService.encrypt(this.password) : null;
+    entity.enterprise = this.enterprise?.toEntity();
 
     return entity;
   }

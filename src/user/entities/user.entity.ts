@@ -25,7 +25,7 @@ export class User {
   id: number;
 
   @Column({ unique: true })
-  registry: number;
+  registration: number;
 
   @Column({ length: 100 })
   name: string;
@@ -54,7 +54,9 @@ export class User {
   @Column({ nullable: true })
   password: string;
 
-  @ManyToOne(() => Enterprise, (enterprise) => enterprise.id)
+  @ManyToOne(() => Enterprise, (enterprise) => enterprise.id, {
+    nullable: true,
+  })
   enterprise: Enterprise;
 
   @OneToMany(() => Route, (route) => route.driver)

@@ -24,7 +24,7 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
-      registry: user.registry,
+      registry: user.registration,
       role: user.role,
     };
 

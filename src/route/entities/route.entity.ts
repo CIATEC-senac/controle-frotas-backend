@@ -13,6 +13,18 @@ export type Coordinate = {
   lng: number;
 };
 
+export type RoutePath = {
+  origin: string;
+  destination: string;
+  stops: string[];
+};
+
+export type RoutePathCoordinates = {
+  origin: Coordinate;
+  destination: Coordinate;
+  stops: Coordinate[];
+};
+
 @Entity('route')
 export class Route {
   @PrimaryGeneratedColumn()
@@ -25,18 +37,10 @@ export class Route {
   estimatedDistance: number;
 
   @Column('json', { nullable: false })
-  path: {
-    origin: string;
-    destination: string;
-    stops: string[];
-  };
+  path: RoutePath;
 
   @Column('json', { nullable: true })
-  pathCoordinates: {
-    origin: Coordinate;
-    destination: Coordinate;
-    stops: Coordinate[];
-  };
+  pathCoordinates: RoutePathCoordinates;
 
   @ManyToOne(() => Vehicle)
   @JoinColumn()

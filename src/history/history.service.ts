@@ -12,7 +12,48 @@ export class HistoryService {
   ) {}
 
   async findAll(): Promise<History[]> {
-    return this.historyRepository.find();
+    const coordinate = { lat: true, lng: true };
+
+    return this.historyRepository.find({
+      select: {
+        id: true,
+        odometerInitial: true,
+        odometerFinal: true,
+        observation: true,
+        status: true,
+        elapsedDistance: true,
+        imgOdometerInitial: true,
+        imgOdometerFinal: true,
+        pathCoordinates: {
+          origin: coordinate,
+          destination: coordinate,
+          stops: true,
+        },
+        path: { origin: true, destination: true, stops: true },
+        startedAt: true,
+        endedAt: true,
+        route: {
+          id: true,
+          path: { origin: true, destination: true, stops: true },
+          pathCoordinates: {
+            origin: coordinate,
+            destination: coordinate,
+            stops: true,
+          },
+          estimatedDistance: true,
+          estimatedDuration: true,
+        },
+        driver: { id: true, name: true, cnh: true },
+        vehicle: {
+          id: true,
+          plate: true,
+          model: true,
+          type: true,
+          capacity: true,
+        },
+      },
+      relations: { driver: true, route: true, vehicle: true },
+    });
   }
 
   async findOne(id: number): Promise<History> {

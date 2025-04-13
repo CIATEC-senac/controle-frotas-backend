@@ -49,9 +49,6 @@ export class Vehicle {
   @Column()
   year: number;
 
-  @Column({ length: 100 })
-  site: string;
-
   @ManyToMany(() => Maintenance, (maintenance) => maintenance.vehicles)
   maintenances: Maintenance[];
 
