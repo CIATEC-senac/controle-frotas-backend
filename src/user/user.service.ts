@@ -35,7 +35,17 @@ export class UserService {
 
   findOneById(id: number): Promise<User | null> {
     return this.repository.findOne({
-      select: { id: true, name: true, role: true },
+      select: {
+        id: true,
+        registration: true,
+        name: true,
+        cpf: true,
+        cnh: true,
+        email: true,
+        admittedAt: true,
+        status: true,
+        role: true,
+      },
       where: { id },
     });
   }

@@ -54,8 +54,6 @@ export class RouteService {
       route.estimatedDistance += leg.distance.value;
     }
 
-    console.log(route);
-
     return await this.repository.save(route).then(() => route);
   }
 
