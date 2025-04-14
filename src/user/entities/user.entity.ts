@@ -1,5 +1,12 @@
+import { Enterprise } from 'src/enterprise/entities/enterprise.entity';
 import { Route } from 'src/route/entities/route.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum UserRole {
   ADMIN = 0,
@@ -29,14 +36,11 @@ export class User {
   @Column({ length: 100, unique: true, nullable: true })
   email: string;
 
-  @Column()
+  @Column({ type: 'date', nullable: true })
   admittedAt: Date;
 
   @Column({ default: true })
   status: boolean;
-
-  @Column({ length: 100 })
-  site: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.DRIVER })
   role: UserRole;
@@ -49,6 +53,11 @@ export class User {
 
   @Column({ nullable: true })
   password: string;
+
+  @ManyToOne(() => Enterprise, (enterprise) => enterprise.id, {
+    nullable: true,
+  })
+  enterprise: Enterprise;
 
   @OneToMany(() => Route, (route) => route.driver)
   routes: Route[];

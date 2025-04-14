@@ -1,10 +1,9 @@
-import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
+  IsDefined,
   IsEmail,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsNumberString,
   IsOptional,
@@ -13,6 +12,7 @@ import {
 } from 'class-validator';
 import { AuthService } from 'src/auth/auth.service';
 import { User, UserRole, UserSource } from '../entities/user.entity';
+import { EnterpriseDTO } from 'src/enterprise/dtos/enterprise.dto';
 
 export class UserDTO {
   @IsOptional()
@@ -37,13 +37,8 @@ export class UserDTO {
   admittedAt: Date;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
   status: boolean;
 
-  @IsNotEmpty()
-  site: string;
-
-  @IsOptional()
   @IsEnum(UserRole)
   role: UserRole = UserRole.DRIVER;
 
@@ -56,7 +51,11 @@ export class UserDTO {
 
   @IsOptional()
   @IsString()
-  password: string = 'senha';
+  password: string;
+
+  @IsOptional()
+  @IsDefined()
+  enterprise?: EnterpriseDTO;
 
   toEntity() {
     const entity = new User();
@@ -67,11 +66,11 @@ export class UserDTO {
     entity.email = this.email;
     entity.admittedAt = this.admittedAt;
     entity.status = this.status;
-    entity.site = this.site;
     entity.role = this.role;
     entity.cnh = this.cnh;
     entity.source = this.source;
-    entity.password = AuthService.encrypt(this.password);
+    entity.password = this.password ? AuthService.encrypt(this.password) : null;
+    entity.enterprise = this.enterprise?.toEntity();
 
     return entity;
   }

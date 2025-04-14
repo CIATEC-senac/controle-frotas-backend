@@ -13,7 +13,19 @@ export class UserService {
 
   findAll(): Promise<User[]> {
     return this.repository.find({
-      select: ['id', 'name', 'admittedAt', 'role', 'routes'],
+      select: [
+        'id',
+        'registration',
+        'name',
+        'cpf',
+        'email',
+        'admittedAt',
+        'status',
+        'role',
+        'cnh',
+        'source',
+      ],
+      where: { status: true },
     });
   }
 
@@ -22,11 +34,24 @@ export class UserService {
   }
 
   findOneById(id: number): Promise<User | null> {
-    return this.repository.findOneBy({ id });
+    return this.repository.findOne({
+      select: {
+        id: true,
+        registration: true,
+        name: true,
+        cpf: true,
+        cnh: true,
+        email: true,
+        admittedAt: true,
+        status: true,
+        role: true,
+      },
+      where: { id },
+    });
   }
 
   async delete(id: number): Promise<void> {
-    await this.repository.delete(id);
+    await this.repository.update({ id: id }, { status: false });
   }
 
   create(user: User): Promise<User> {

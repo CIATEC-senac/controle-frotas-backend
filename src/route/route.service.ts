@@ -1,39 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Route } from 'src/route/entities/route.entity';
-import { User } from 'src/user/entities/user.entity';
-import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
+import { UserRole } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RouteDTO } from './dtos/route.dto';
 import { GeoCodeService } from './geocode.service';
+import { UserService } from 'src/user/user.service';
+import { VehicleService } from 'src/vehicle/vehicle.service';
 
 @Injectable()
 export class RouteService {
   constructor(
     @InjectRepository(Route)
     private readonly repository: Repository<Route>,
-    @InjectRepository(Vehicle)
-    private readonly vehicleRepository: Repository<Vehicle>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly vehicleService: VehicleService,
+    private readonly userService: UserService,
     private readonly geoCodeService: GeoCodeService,
   ) {}
 
   private async validateRelations(route: Route) {
     // Buscar o Veículo com a placa fornecida
-    const vehicle = await this.vehicleRepository.findOneBy({
-      id: route.vehicle.id,
-    });
+    const vehicle = await this.vehicleService.findOneBy(route.vehicle.id);
 
     if (!vehicle) {
-      throw new Error('Veículo com a placa fornecida não encontrado');
+      throw new Error(`Veículo ${route.vehicle.id} não encontrado`);
     }
 
     // Buscar o usuário com o id fornecido
-    const driver = await this.userRepository.findOneBy({ id: route.driver.id });
+    const driver = await this.userService.findOneById(route.driver.id);
 
     if (!driver) {
-      throw new Error('Motorista com o id fornecido não encontrado');
+      throw new Error(`Motorista ${route.driver.id} não encontrado`);
+    }
+
+    if (driver.role != UserRole.DRIVER) {
+      throw new Error(`Usuário ${driver.name} não é motorista`);
     }
   }
 
@@ -53,7 +54,7 @@ export class RouteService {
       route.estimatedDistance += leg.distance.value;
     }
 
-    return await this.repository.save(route);
+    return await this.repository.save(route).then(() => route);
   }
 
   async update(routeDTO: RouteDTO): Promise<any> {
@@ -75,13 +76,16 @@ export class RouteService {
   findAll(): Promise<Route[]> {
     return this.repository.find({
       select: {
-        driver: { name: true, id: true },
-        vehicle: {
-          site: true,
+        driver: {
+          name: true,
           id: true,
-          enterprise: true,
+          enterprise: { id: true, name: true },
+        },
+        vehicle: {
+          id: true,
           plate: true,
           capacity: true,
+          enterprise: { id: true, name: true },
         },
       },
       relations: { vehicle: true, driver: true },
@@ -92,11 +96,14 @@ export class RouteService {
     return this.repository.findOne({
       where: { id },
       select: {
-        driver: { name: true, id: true },
+        driver: {
+          name: true,
+          id: true,
+          enterprise: { id: true, name: true },
+        },
         vehicle: {
           id: true,
-          site: true,
-          enterprise: true,
+          enterprise: { id: true, name: true },
           plate: true,
           capacity: true,
         },

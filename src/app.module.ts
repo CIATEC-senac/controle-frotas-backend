@@ -13,6 +13,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
 import { HistoryModule } from './history/history.module';
 import { History } from './history/entities/history.entity';
 import { PdfModule } from './pdf/pdf.module';
+import { Enterprise } from './enterprise/entities/enterprise.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { PdfModule } from './pdf/pdf.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Vehicle, Maintenance, Route, History],
+      entities: [User, Vehicle, Maintenance, Route, History, Enterprise],
       synchronize: true,
     }),
     UserModule,

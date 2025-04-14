@@ -1,4 +1,8 @@
-import { Route } from 'src/route/entities/route.entity';
+import {
+  Route,
+  RoutePath,
+  RoutePathCoordinates,
+} from 'src/route/entities/route.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -34,25 +38,17 @@ export class History {
   @Column({ type: 'decimal' })
   elapsedDistance: number;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: true })
   imgOdometerInitial: string;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: true })
   imgOdometerFinal: string;
 
-  @Column('json', { nullable: false })
-  pathCoordinates: {
-    origin: Coordinates;
-    destination: Coordinates;
-    stops: Coordinates[];
-  };
+  @Column('json', { nullable: true })
+  pathCoordinates: RoutePathCoordinates;
 
-  @Column('json', { nullable: false })
-  path: {
-    origin: string;
-    destination: string;
-    stops: string[];
-  };
+  @Column('json', { nullable: true })
+  path: RoutePath;
 
   @Column({ type: 'timestamp' })
   startedAt: Date;
