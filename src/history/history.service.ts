@@ -43,4 +43,13 @@ export class HistoryService {
 
     return this.historyRepository.save(history);
   }
+
+  async findAllByDriverId(driverId: number): Promise<History[]> {
+    return this.historyRepository.find({
+      where: {
+        driver: { id: driverId }, // Ou outra forma de busca relacionada à rota
+      },
+      relations: ['route', 'driver', 'vehicle'], // Certifique-se de incluir as relações necessárias
+    });
+  }
 }

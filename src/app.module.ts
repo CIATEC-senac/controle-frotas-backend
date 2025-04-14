@@ -12,6 +12,7 @@ import { Vehicle } from './vehicle/entities/vehicle.entity';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { HistoryModule } from './history/history.module';
 import { History } from './history/entities/history.entity';
+import { PdfModule } from './pdf/pdf.module';
 
 @Module({
   imports: [
@@ -31,12 +32,13 @@ import { History } from './history/entities/history.entity';
     ManutencaoModule,
     RouteModule,
     HistoryModule,
+    PdfModule,
   ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AppLoggerMiddleware)
-      .forRoutes('user', 'vehicle', 'maintenance', 'route', 'history');
+      .forRoutes('user', 'vehicle', 'maintenance', 'route', 'history', 'pdf');
   }
 }

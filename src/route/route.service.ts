@@ -104,4 +104,15 @@ export class RouteService {
       relations: { vehicle: true, driver: true },
     });
   }
+
+  async findByDriverId(driverId: number): Promise<Route[]> {
+    return this.repository.find({
+      where: {
+        driver: {
+          id: driverId,
+        },
+      },
+      relations: ['driver', 'vehicle'],
+    });
+  }
 }
