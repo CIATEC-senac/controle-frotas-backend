@@ -13,6 +13,8 @@ import { VehicleModule } from './vehicle/vehicle.module';
 import { HistoryModule } from './history/history.module';
 import { History } from './history/entities/history.entity';
 import { Enterprise } from './enterprise/entities/enterprise.entity';
+import { HistoryApproval } from './history/entities/history-approval.entity';
+import { PdfModule } from './pdf/pdf.module';
 
 @Module({
   imports: [
@@ -23,7 +25,15 @@ import { Enterprise } from './enterprise/entities/enterprise.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Vehicle, Maintenance, Route, History, Enterprise],
+      entities: [
+        User,
+        Vehicle,
+        Maintenance,
+        Route,
+        History,
+        HistoryApproval,
+        Enterprise,
+      ],
       synchronize: true,
     }),
     UserModule,
@@ -32,6 +42,7 @@ import { Enterprise } from './enterprise/entities/enterprise.entity';
     ManutencaoModule,
     RouteModule,
     HistoryModule,
+    PdfModule,
   ],
 })
 export class AppModule {

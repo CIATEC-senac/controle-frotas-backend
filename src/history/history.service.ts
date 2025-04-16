@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { History, HistoryStatus } from './entities/history.entity';
+import { History } from './entities/history.entity';
 import { HistoryDTO } from './dto/history.dto';
+import { HistoryApprovalDTO } from './dto/history.approval.dto';
+import { HistoryApproval } from './entities/history-approval.entity';
 
 @Injectable()
 export class HistoryService {
   constructor(
     @InjectRepository(History)
     private readonly historyRepository: Repository<History>,
+    @InjectRepository(HistoryApproval)
+    private readonly approvalRepository: Repository<HistoryApproval>,
   ) {}
 
-  async findAll(): Promise<History[]> {
+  async findAll(id?: number): Promise<History[]> {
     const coordinate = { lat: true, lng: true };
 
     return this.historyRepository.find({
@@ -19,8 +23,6 @@ export class HistoryService {
         id: true,
         odometerInitial: true,
         odometerFinal: true,
-        observation: true,
-        status: true,
         elapsedDistance: true,
         imgOdometerInitial: true,
         imgOdometerFinal: true,
@@ -43,7 +45,18 @@ export class HistoryService {
           estimatedDistance: true,
           estimatedDuration: true,
         },
-        driver: { id: true, name: true, cnh: true },
+        driver: { id: true, name: true, cnh: true, cpf: true },
+        approval: {
+          approvedBy: {
+            id: true,
+            name: true,
+            cnh: true,
+            cpf: true,
+          },
+          date: true,
+          observation: true,
+          status: true,
+        },
         vehicle: {
           id: true,
           plate: true,
@@ -52,14 +65,34 @@ export class HistoryService {
           capacity: true,
         },
       },
-      relations: { driver: true, route: true, vehicle: true },
+      where:
+        id != null
+          ? {
+              driver: { id: id },
+            }
+          : undefined,
+      relations: {
+        driver: true,
+        route: true,
+        vehicle: true,
+        approval: {
+          approvedBy: true,
+        },
+      },
     });
   }
 
   async findOne(id: number): Promise<History> {
     const history = await this.historyRepository.findOne({
       where: { id },
-      relations: { driver: true, vehicle: true, route: true },
+      relations: {
+        driver: true,
+        vehicle: true,
+        route: true,
+        approval: {
+          approvedBy: true,
+        },
+      },
     });
 
     if (!history) {
@@ -73,15 +106,22 @@ export class HistoryService {
     return this.historyRepository.save(history.toEntity());
   }
 
-  async updateStatus(id: number, status: HistoryStatus): Promise<History> {
+  async updateStatus(id: number, status: HistoryApprovalDTO): Promise<History> {
     const history = await this.historyRepository.findOne({ where: { id } });
 
     if (!history) {
       throw new Error('Histórico não encontrado');
     }
 
-    history.status = status;
+    const approval = new HistoryApproval();
+    approval.status = status.status;
+    approval.observation = status.observation;
+    approval.date = status.date;
+    approval.approvedBy = status.approvedBy.toEntity();
 
-    return this.historyRepository.save(history);
+    return this.approvalRepository.save(approval).then((approval) => {
+      history.approval = approval;
+      return this.historyRepository.save(history);
+    });
   }
 }

@@ -3,30 +3,22 @@ import {
   IsOptional,
   IsString,
   ValidateNested,
-  IsEnum,
   IsDate,
   IsDefined,
 } from 'class-validator';
 import { Route } from 'src/route/entities/route.entity';
-import {
-  Coordinates,
-  History,
-  HistoryStatus,
-} from '../entities/history.entity';
+import { Coordinates, History } from '../entities/history.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 
 export class PathCoordinatesDTO {
   @IsOptional()
-  @ValidateNested()
   origin: Coordinates;
 
   @IsOptional()
-  @ValidateNested()
   destination: Coordinates;
 
   @IsOptional()
-  @ValidateNested({ each: true })
   stops: Coordinates[];
 }
 
@@ -48,12 +40,6 @@ export class HistoryDTO {
   @IsNumber()
   odometerFinal: number;
 
-  @IsString()
-  observation: string;
-
-  @IsEnum(HistoryStatus)
-  status: HistoryStatus;
-
   @IsNumber({ maxDecimalPlaces: 2 })
   elapsedDistance: number;
 
@@ -65,7 +51,6 @@ export class HistoryDTO {
   @IsString()
   imgOdometerFinal?: string;
 
-  @ValidateNested()
   pathCoordinates: PathCoordinatesDTO;
 
   @ValidateNested()
@@ -91,8 +76,6 @@ export class HistoryDTO {
 
     history.odometerInitial = this.odometerInitial;
     history.odometerFinal = this.odometerFinal;
-    history.observation = this.observation;
-    history.status = this.status;
     history.elapsedDistance = this.elapsedDistance;
     history.imgOdometerInitial = this.imgOdometerInitial;
     history.imgOdometerFinal = this.imgOdometerFinal;
@@ -104,6 +87,7 @@ export class HistoryDTO {
     history.driver = this.driver;
     history.vehicle = this.vehicle;
     history.route = this.route;
+    history.approval = null;
 
     return history;
   }
