@@ -13,7 +13,8 @@ export class PdfService {
 
     new Logger().debug('launch');
 
-    const page = await browser.newPage();
+    // Encontrei no google e resolveu: https://stackoverflow.com/questions/57359641/when-using-puppeteer-is-it-faster-to-open-a-new-page-after-launching-the-browse
+    const [page] = await browser.pages();
 
     new Logger().debug('new page');
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Logger, Param, StreamableFile } from '@nestjs/common';
 import { PdfService } from './pdf.service';
 import { Render } from '@nestjs/common';
 import { Buffer } from 'buffer';
@@ -11,31 +11,30 @@ export class PdfController {
     private readonly userService: UserService,
   ) {}
 
-  @Get()
+  @Get(':id')
   async printPDF(@Param('id') id: string) {
-    const userId = await this.userService.findOneById(Number(id));
-    const url = `http://localhost:3000/pdf/print/${userId}`;
-
+    // Retirado variável que armazenava id do tipo usuario (Ele que tava avacalhando)
+    const url = `http://localhost:3000/pdf/print/${id}`;
     const data = await this.pdfService.generatePdf(url);
+
     return new StreamableFile(Buffer.from(data));
   }
 
-  @Get('print/:userId')
+  @Get('print/:id')
   @Render('templates/route')
-  async renderPDF(@Param('userId') userId: string) {
+  async renderPDF(@Param('id') userId: string) {
+    new Logger().log(`User id: ${userId}`);
+
     const user = await this.userService.findOneById(Number(userId));
 
     return {
       data: new Date().toLocaleDateString('pt-BR'),
-
       user: user,
-
       veiculo: {
         modelo: 'Mercedes Sprinter',
         placa: 'ABC-1234',
         km: '23.456 km',
       },
-
       rotas: [
         {
           nome: 'Rota 1 - Centro',
