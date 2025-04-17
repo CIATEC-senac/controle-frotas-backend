@@ -85,7 +85,9 @@ export class RouteService {
           id: true,
           plate: true,
           capacity: true,
+          model: true,
           enterprise: { id: true, name: true },
+          type: true,
         },
       },
       relations: { vehicle: true, driver: true },
@@ -99,6 +101,8 @@ export class RouteService {
         driver: {
           name: true,
           id: true,
+          cnh: true,
+          cpf: true,
           enterprise: { id: true, name: true },
         },
         vehicle: {
@@ -106,6 +110,8 @@ export class RouteService {
           enterprise: { id: true, name: true },
           plate: true,
           capacity: true,
+          model: true,
+          type: true,
         },
       },
       relations: { vehicle: true, driver: true },

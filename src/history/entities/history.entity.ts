@@ -6,17 +6,12 @@ import {
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { HistoryApproval } from './history-approval.entity';
 
 export type Coordinates = {
   lat: number;
   lng: number;
 };
-
-export enum HistoryStatus {
-  PENDING = 0,
-  APPROVED = 1,
-  DISAPPROVED = 2,
-}
 
 @Entity('history')
 export class History {
@@ -29,11 +24,10 @@ export class History {
   @Column({ type: 'int' })
   odometerFinal: number;
 
-  @Column({ type: 'varchar', length: 250 })
-  observation: string;
-
-  @Column({ type: 'enum', enum: HistoryStatus, default: HistoryStatus.PENDING })
-  status: HistoryStatus;
+  @ManyToOne(() => HistoryApproval, (approval) => approval.id, {
+    nullable: true,
+  })
+  approval: HistoryApproval;
 
   @Column({ type: 'decimal' })
   elapsedDistance: number;
@@ -50,10 +44,10 @@ export class History {
   @Column('json', { nullable: true })
   path: RoutePath;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   startedAt: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   endedAt: Date;
 
   @ManyToOne(() => Route, (route) => route.id)

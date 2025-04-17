@@ -13,6 +13,7 @@ export class AppLoggerMiddleware implements NestMiddleware {
 
     response.on('close', () => {
       const { statusCode } = response;
+
       const contentLength = response.get('content-length');
 
       const decodedUrl = decodeURIComponent(url);
@@ -23,6 +24,10 @@ export class AppLoggerMiddleware implements NestMiddleware {
       );
     });
 
-    next();
+    if (process.env.MOCK_TIMEOUT) {
+      setTimeout(() => next(), Number(process.env.MOCK_TIMEOUT));
+    } else {
+      next();
+    }
   }
 }

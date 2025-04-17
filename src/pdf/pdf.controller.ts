@@ -58,7 +58,7 @@ export class PdfController {
         data: start.format('DD/MM/YYYY'),
         inicio: start.format('HH:mm'),
         termino: end.format('HH:mm'),
-        status: statusTraduzido[h.status] || 'Desconhecido',
+        status: statusTraduzido[h.approval.status] || 'Desconhecido',
       };
     });
 
