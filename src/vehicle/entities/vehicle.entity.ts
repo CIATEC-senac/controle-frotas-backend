@@ -11,10 +11,10 @@ import {
 } from 'typeorm';
 
 export enum VehicleType {
-  CAR = 'carro',
+  CAR = 'car',
   VAN = 'van',
-  BUS = 'onibus',
-  MINIBUS = 'minionibus',
+  BUS = 'bus',
+  MINIBUS = 'minibus',
 }
 
 @Entity('vehicle')
@@ -29,8 +29,9 @@ export class Vehicle {
     type: 'enum',
     enum: VehicleType,
     default: VehicleType.BUS,
+    nullable: true,
   })
-  type: VehicleType;
+  type?: VehicleType;
 
   @Column({ length: 30, nullable: true })
   model: string;
