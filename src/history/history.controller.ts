@@ -76,12 +76,16 @@ export class HistoryController {
 
   @Roles(UserRole.DRIVER)
   @Post('upload/getSignedUrl')
-  getSignedUrl(@Body() upload: HistoryUploadDTO) {
-    return new GcsService().getSignedUrl(upload.fileName, upload.contentType);
+  async getSignedUrl(@Body() upload: HistoryUploadDTO) {
+    const signedUrl = await new GcsService().getSignedUrl(
+      upload.fileName,
+      upload.contentType,
+    );
+
+    return { signedUrl };
   }
 
   @Post(':id/:status')
-  @Post(':id')
   @Roles(UserRole.MANAGER)
   async updateStatus(
     @Param('id') id: number,

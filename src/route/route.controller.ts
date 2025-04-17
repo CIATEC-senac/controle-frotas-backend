@@ -41,7 +41,7 @@ export class RouteController {
     }
   }
 
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.DRIVER)
   @Get(':id')
   async find(
     @Param('id') id: number,
