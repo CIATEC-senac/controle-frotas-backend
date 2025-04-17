@@ -1,4 +1,11 @@
-import { Controller, Get, Param, StreamableFile, Render } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  StreamableFile,
+  Render,
+  UseGuards,
+} from '@nestjs/common';
 import { PdfService } from './pdf.service';
 import { Buffer } from 'buffer';
 import { UserService } from 'src/user/user.service';
@@ -6,7 +13,12 @@ import { VehicleService } from 'src/vehicle/vehicle.service';
 import { RouteService } from 'src/route/route.service';
 import { HistoryService } from 'src/history/history.service';
 import * as moment from 'moment';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRole } from 'src/user/entities/user.entity';
 
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('pdf')
 export class PdfController {
   constructor(
@@ -17,6 +29,7 @@ export class PdfController {
     private readonly historyService: HistoryService,
   ) {}
 
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @Get()
   async printPDF(@Param('id') id: string) {
     const userId = await this.userService.findOneById(Number(id));
@@ -26,6 +39,7 @@ export class PdfController {
     return new StreamableFile(Buffer.from(data));
   }
 
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @Get('print/:userId')
   @Render('templates/route')
   async renderPDF(@Param('userId') userId: string) {

@@ -8,21 +8,29 @@ import {
   Patch,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { RouteDTO } from './dtos/route.dto';
 import { Route } from './entities/route.entity';
 import { RouteService as RouteService } from './route.service';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRole } from 'src/user/entities/user.entity';
 
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('route')
 export class RouteController {
   constructor(private readonly service: RouteService) {}
 
+  @Roles(UserRole.ADMIN)
   @Get()
   findAll(): Promise<Route[]> {
     return this.service.findAll();
   }
 
+  @Roles(UserRole.ADMIN)
   @Post()
   async create(@Body() route: RouteDTO, @Res() res: Response) {
     try {
@@ -33,6 +41,7 @@ export class RouteController {
     }
   }
 
+  @Roles(UserRole.ADMIN)
   @Get(':id')
   async find(
     @Param('id') id: number,
@@ -47,6 +56,7 @@ export class RouteController {
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
+  @Roles(UserRole.ADMIN)
   @Patch()
   async update(@Body() route: RouteDTO, @Res() res: Response) {
     try {
@@ -57,6 +67,7 @@ export class RouteController {
     }
   }
 
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
   async delete(@Param('id') id: number, @Res() res: Response) {
     try {
