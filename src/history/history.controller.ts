@@ -6,12 +6,15 @@ import {
   HttpStatus,
   Res,
   Param,
+  Patch,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HistoryService } from './history.service';
 import { HistoryDTO } from './dto/history.dto';
+import { GcsService } from 'src/infrastructure/gcp/gcs';
+import { HistoryUploadDTO } from './dto/history.upload.dto';
 import { History } from './entities/history.entity';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
 import { RequestUser } from 'src/auth/auth.service';
@@ -49,7 +52,7 @@ export class HistoryController {
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.DRIVER)
   @Post()
   async create(@Body() history: HistoryDTO, @Res() res: Response) {
     try {
@@ -60,6 +63,24 @@ export class HistoryController {
     }
   }
 
+  @Roles(UserRole.DRIVER)
+  @Patch()
+  async update(@Body() history: HistoryDTO, @Res() res: Response) {
+    try {
+      const result = await this.service.update(history);
+      res.status(HttpStatus.CREATED).json(result);
+    } catch (e) {
+      res.status(HttpStatus.CONFLICT).send(e.message);
+    }
+  }
+
+  @Roles(UserRole.DRIVER)
+  @Post('upload/getSignedUrl')
+  getSignedUrl(@Body() upload: HistoryUploadDTO) {
+    return new GcsService().getSignedUrl(upload.fileName, upload.contentType);
+  }
+
+  @Post(':id/:status')
   @Post(':id')
   @Roles(UserRole.MANAGER)
   async updateStatus(
