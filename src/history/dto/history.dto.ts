@@ -42,6 +42,10 @@ export class PathDTO {
 }
 
 export class HistoryDTO {
+  @IsOptional()
+  @IsNumber()
+  id?: number;
+
   @IsNumber()
   odometerInitial: number;
 

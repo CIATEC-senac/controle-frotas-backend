@@ -6,11 +6,14 @@ import {
   HttpStatus,
   Res,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { HistoryService } from './history.service';
 import { HistoryDTO } from './dto/history.dto';
 import { History, HistoryStatus } from './entities/history.entity';
+import { GcsService } from 'src/infrastructure/gcp/gcs';
+import { HistoryUploadDTO } from './dto/history.upload.dto';
 
 @Controller('history')
 export class HistoryController {
@@ -43,6 +46,21 @@ export class HistoryController {
     } catch (e) {
       res.status(HttpStatus.CONFLICT).send(e.message);
     }
+  }
+
+  @Patch()
+  async update(@Body() history: HistoryDTO, @Res() res: Response) {
+    try {
+      const result = await this.service.update(history);
+      res.status(HttpStatus.CREATED).json(result);
+    } catch (e) {
+      res.status(HttpStatus.CONFLICT).send(e.message);
+    }
+  }
+
+  @Post('upload/getSignedUrl')
+  getSignedUrl(@Body() upload: HistoryUploadDTO) {
+    return new GcsService().getSignedUrl(upload.fileName, upload.contentType);
   }
 
   @Post(':id/:status')

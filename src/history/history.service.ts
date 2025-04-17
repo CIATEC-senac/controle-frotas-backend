@@ -73,6 +73,12 @@ export class HistoryService {
     return this.historyRepository.save(history.toEntity());
   }
 
+  async update(history: HistoryDTO): Promise<History> {
+    return this.historyRepository
+      .update({ id: history.id }, history.toEntity())
+      .then(() => this.findOne(history.id));
+  }
+
   async updateStatus(id: number, status: HistoryStatus): Promise<History> {
     const history = await this.historyRepository.findOne({ where: { id } });
 
