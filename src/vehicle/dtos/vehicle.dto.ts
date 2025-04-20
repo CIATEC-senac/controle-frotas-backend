@@ -7,18 +7,18 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { EnterpriseDTO } from 'src/enterprise/dtos/enterprise.dto';
 import { Vehicle, VehicleType } from '../entities/vehicle.entity';
 import { IsCarPlate } from './is-car-plate.decorator';
-import { EnterpriseDTO } from 'src/enterprise/dtos/enterprise.dto';
 
 export class VehicleDTO {
   @IsOptional()
-  @IsEnum(VehicleType)
-  type: VehicleType = VehicleType.BUS;
-
-  @IsOptional()
   @IsNumber()
   id: number;
+
+  @IsOptional()
+  @IsEnum(VehicleType)
+  type: VehicleType = VehicleType.BUS;
 
   @IsNumber()
   capacity: number;

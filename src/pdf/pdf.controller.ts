@@ -1,24 +1,15 @@
-import {
-  Controller,
-  Get,
-  Param,
-  StreamableFile,
-  Render,
-  UseGuards,
-} from '@nestjs/common';
-import { PdfService } from './pdf.service';
+import { Controller, Get, Param, Render, StreamableFile } from '@nestjs/common';
 import { Buffer } from 'buffer';
+import * as moment from 'moment';
+import { Roles } from 'src/auth/roles.decorator';
+import { HistoryService } from 'src/history/history.service';
+import { RouteService } from 'src/route/route.service';
+import { UserRole } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { VehicleService } from 'src/vehicle/vehicle.service';
-import { RouteService } from 'src/route/route.service';
-import { HistoryService } from 'src/history/history.service';
-import * as moment from 'moment';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/user/entities/user.entity';
+import { PdfService } from './pdf.service';
 
-@UseGuards(AuthGuard, RolesGuard)
+// @UseGuards(AuthGuard, RolesGuard)
 @Controller('pdf')
 export class PdfController {
   constructor(

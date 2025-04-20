@@ -42,6 +42,12 @@ export class Route {
   @Column('json', { nullable: true })
   pathCoordinates: RoutePathCoordinates;
 
+  @Column({ type: 'varchar', nullable: true })
+  startAt: string;
+
+  @Column({ type: 'bool', default: true })
+  status: boolean;
+
   @ManyToOne(() => Vehicle)
   @JoinColumn()
   vehicle: Vehicle;

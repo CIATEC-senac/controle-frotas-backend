@@ -1,15 +1,15 @@
 import {
+  IsDate,
+  IsDefined,
   IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
-  IsDate,
-  IsDefined,
 } from 'class-validator';
 import { Route } from 'src/route/entities/route.entity';
-import { Coordinates, History } from '../entities/history.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
+import { Coordinates, History } from '../entities/history.entity';
 
 export class PathCoordinatesDTO {
   @IsOptional()
@@ -31,6 +31,40 @@ export class PathDTO {
 
   @IsString({ each: true })
   stops: string[];
+}
+
+export class CreateHistoryDTO {
+  @IsNumber()
+  odometerInitial: number;
+
+  @IsString()
+  imgOdometerInitial?: string;
+
+  @IsDate()
+  startedAt: Date;
+
+  @IsDefined()
+  driver: User;
+
+  @IsDefined()
+  vehicle: Vehicle;
+
+  @IsDefined()
+  route: Route;
+
+  toEntity(): History {
+    const history = new History();
+
+    history.odometerInitial = this.odometerInitial;
+    history.imgOdometerInitial = this.imgOdometerInitial;
+    history.startedAt = this.startedAt;
+
+    history.driver = this.driver;
+    history.vehicle = this.vehicle;
+    history.route = this.route;
+
+    return history;
+  }
 }
 
 export class HistoryDTO {

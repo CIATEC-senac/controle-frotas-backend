@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { AppLoggerMiddleware } from './lib/middlewares/applogger';
 import { Maintenance } from './maintenance/entities/maintenance.entity';
-import { ManutencaoModule } from './maintenance/maintenance.module';
+import { MaintenanceModule } from './maintenance/maintenance.module';
 import { Route } from './route/entities/route.entity';
 import { RouteModule } from './route/route.module';
 import { User } from './user/entities/user.entity';
@@ -15,6 +15,7 @@ import { History } from './history/entities/history.entity';
 import { Enterprise } from './enterprise/entities/enterprise.entity';
 import { HistoryApproval } from './history/entities/history-approval.entity';
 import { PdfModule } from './pdf/pdf.module';
+import { EnterpriseModule } from './enterprise/enterprise.module';
 
 @Module({
   imports: [
@@ -39,9 +40,10 @@ import { PdfModule } from './pdf/pdf.module';
     UserModule,
     AuthModule,
     VehicleModule,
-    ManutencaoModule,
+    MaintenanceModule,
     RouteModule,
     HistoryModule,
+    EnterpriseModule,
     PdfModule,
   ],
 })
