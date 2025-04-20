@@ -21,7 +21,7 @@ export class History {
   @Column({ type: 'int' })
   odometerInitial: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   odometerFinal: number;
 
   @ManyToOne(() => HistoryApproval, (approval) => approval.id, {

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HistoryService } from './history.service';
-import { HistoryController } from './history.controller';
-import { History } from './entities/history.entity';
+
 import { HistoryApproval } from './entities/history-approval.entity';
-import { RouteModule } from 'src/route/route.module';
+import { History } from './entities/history.entity';
+import { HistoryController } from './history.controller';
+import { HistoryService } from './history.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([History, HistoryApproval]), RouteModule],
+  imports: [TypeOrmModule.forFeature([History, HistoryApproval])],
   providers: [HistoryService],
   controllers: [HistoryController],
   exports: [HistoryService],

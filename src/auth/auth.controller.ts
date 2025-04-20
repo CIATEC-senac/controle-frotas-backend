@@ -6,8 +6,10 @@ import { SignInDTO } from './dtos/signin.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // Rota para fazer login com autenticação e usando um retorno http
   @HttpCode(HttpStatus.OK)
   @Post('login')
+  // Definindo o tipo do signIndto no body da requisição
   signIn(@Body() signInDto: SignInDTO) {
     return this.authService
       .signIn(signInDto.cpf, signInDto.password)

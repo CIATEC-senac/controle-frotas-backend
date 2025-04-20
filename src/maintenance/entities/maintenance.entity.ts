@@ -29,7 +29,7 @@ export class Maintenance {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   date: Date;
 
   @ManyToMany(() => Vehicle, (vehicle) => vehicle.maintenances, {

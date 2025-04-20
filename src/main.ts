@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'node:path';
 
 import { AppModule } from './app.module';
+import { UserService } from './user/user.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -18,6 +19,8 @@ async function bootstrap() {
   );
 
   app.enableCors();
+
+  await app.get(UserService).createAdmin();
 
   await app.listen(process.env.PORT ?? 3000, () => {
     new Logger().log(`Servidor rodando na porta: ${process.env.PORT ?? 3000}`);

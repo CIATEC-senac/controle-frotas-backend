@@ -2,41 +2,45 @@ import {
   Body,
   Controller,
   Get,
-  Post,
   HttpStatus,
-  Res,
   Param,
   Patch,
+  Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { HistoryService } from './history.service';
-import { HistoryDTO } from './dto/history.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RequestUser } from 'src/auth/auth.service';
+import { Roles } from 'src/auth/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { GcsService } from 'src/infrastructure/gcp/gcs';
+import { UserDTO } from 'src/user/dtos/user.dto';
+import { UserRole } from 'src/user/entities/user.entity';
+import { HistoryApprovalDTO } from './dto/history.approval.dto';
+import { HistoryDTO } from './dto/history.dto';
 import { HistoryUploadDTO } from './dto/history.upload.dto';
 import { History } from './entities/history.entity';
-import { HistoryApprovalDTO } from './dto/history.approval.dto';
-import { RequestUser } from 'src/auth/auth.service';
-import { UserDTO } from 'src/user/dtos/user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/user/entities/user.entity';
+import { HistoryService } from './history.service';
 
+// Aplica os guards de autenticação e autorização a todo o controller
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('history')
 export class HistoryController {
   constructor(private readonly service: HistoryService) {}
 
+  // Rota para listar todos os históricos e passando os cargos de quem tem acesso
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.DRIVER)
   @Get()
+  // Se o usuário for DRIVER, limita a busca ao próprio usuário
   findAll(@Req() req: Request & { user: RequestUser }): Promise<History[]> {
     const userId = req.user.role == UserRole.DRIVER ? req.user.sub : null;
 
     return this.service.findAll(userId);
   }
 
+  // Rota para buscar histórico por id
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @Get(':id')
   async find(
@@ -52,6 +56,7 @@ export class HistoryController {
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
+  // Rota para criar um novo histórico
   @Roles(UserRole.DRIVER)
   @Post()
   async create(@Body() history: HistoryDTO, @Res() res: Response) {
@@ -63,6 +68,7 @@ export class HistoryController {
     }
   }
 
+  // Rota para atualizar um histórico existente
   @Roles(UserRole.DRIVER)
   @Patch()
   async update(@Body() history: HistoryDTO, @Res() res: Response) {
@@ -74,6 +80,8 @@ export class HistoryController {
     }
   }
 
+  // Rota para gerar uma URL assinada para upload de arquivos
+  // Apenas o DRIVER pode usar
   @Roles(UserRole.DRIVER)
   @Post('upload/getSignedUrl')
   async getSignedUrl(@Body() upload: HistoryUploadDTO) {
@@ -85,6 +93,8 @@ export class HistoryController {
     return { signedUrl };
   }
 
+  // Rota para atualização de status de um histórico (ex: aprovado ou reprovado)
+  // Apenas o MANAGER pode usar
   @Post(':id/:status')
   @Roles(UserRole.MANAGER)
   async updateStatus(
@@ -94,6 +104,7 @@ export class HistoryController {
     @Res() res: Response,
   ) {
     try {
+      // Adiciona informações do aprovador e data à requisição
       approval.approvedBy = new UserDTO();
       approval.approvedBy.id = req.user.sub;
 
