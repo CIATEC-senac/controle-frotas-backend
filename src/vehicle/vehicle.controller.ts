@@ -19,7 +19,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/user/entities/user.entity';
 
-@UseGuards(AuthGuard, RolesGuard)
+//@UseGuards(AuthGuard, RolesGuard)
 @Controller('vehicle')
 export class VehicleController {
   constructor(private readonly service: VehicleService) {}
