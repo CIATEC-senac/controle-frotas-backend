@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { History } from 'src/history/entities/history.entity';
 import { Buffer } from 'buffer';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 @Injectable()
 export class ExcelService {
@@ -114,8 +114,8 @@ export class ExcelService {
     workbook: ExcelJS.Workbook,
     url: string,
   ): Promise<number> {
-    const response = await fetch(url);
-    const imageBuffer = await response.buffer();
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(response.data);
     return workbook.addImage({
       buffer: imageBuffer,
       extension: 'png',

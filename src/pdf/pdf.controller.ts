@@ -54,7 +54,7 @@ export class PdfController {
 
     return {
       date: dayjs().format('DD/MM/YYYY'),
-      historico: {
+      history: {
         ...history,
         date: start ? start.format('DD/MM/YYYY') : '-',
         start: start ? start.format('HH:mm') : '-',

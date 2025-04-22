@@ -40,17 +40,17 @@
       <div class='flex-container'>
         <div>
           <h3>Motorista</h3>
-          <p><b>Nome:</b> {{historico.driver.name}}</p>
-          <p><b>Matrícula:</b> {{historico.driver.registration}}</p>
-          <p><b>CNH:</b> {{historico.driver.cnh}}</p>
-          <p><b>Cargo:</b> {{historico.role}}</p>
+          <p><b>Nome:</b> {{history.driver.name}}</p>
+          <p><b>Matrícula:</b> {{history.driver.registration}}</p>
+          <p><b>CNH:</b> {{history.driver.cnh}}</p>
+          <p><b>Cargo:</b> {{history.role}}</p>
         </div>
         <div>
           <h3>Veículo</h3>
-          <p><b>Modelo:</b> {{historico.vehicle.model}}</p>
-          <p><b>Placa:</b> {{historico.vehicle.plate}}</p>
-          <p><b>Ano de Fabricação:</b> {{historico.vehicle.year}}</p>
-          <p><b>Capacidade:</b> {{historico.vehicle.capacity}} pessoas</p>
+          <p><b>Modelo:</b> {{history.vehicle.model}}</p>
+          <p><b>Placa:</b> {{history.vehicle.plate}}</p>
+          <p><b>Ano de Fabricação:</b> {{history.vehicle.year}}</p>
+          <p><b>Capacidade:</b> {{history.vehicle.capacity}} pessoas</p>
         </div>
       </div>
     </section>
@@ -69,15 +69,15 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{historico.route.path.origin}}</td>
-            <td>{{historico.route.path.destination}}</td>
+            <td>{{history.route.path.origin}}</td>
+            <td>{{history.route.path.destination}}</td>
             <td>
-              {{#each historico.route.path.stops}}
+              {{#each history.route.path.stops}}
                 {{this}}{{#unless @last}}, {{/unless}}
               {{/each}}
             </td>
-            <td>{{historico.route.estimatedDistance}}</td>
-            <td>{{historico.route.estimatedDuration}}</td>
+            <td>{{history.route.estimatedDistance}}</td>
+            <td>{{history.route.estimatedDuration}}</td>
           </tr>
         </tbody>
       </table>
@@ -103,21 +103,21 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{historico.date}}</td>
-            <td>{{historico.odometerInitial}} km</td>
-            <td>{{historico.odometerFinal}} km</td>
-            <td>{{historico.elapsedDistance}} km</td>
-            <td>{{historico.status}}</td>
-            <td>{{historico.start}}</td>
-            <td>{{historico.finish}}</td>
-            <td>{{historico.path.origin}}</td>
-            <td>{{historico.path.destination}}</td>
+            <td>{{history.date}}</td>
+            <td>{{history.odometerInitial}} km</td>
+            <td>{{history.odometerFinal}} km</td>
+            <td>{{history.elapsedDistance}} km</td>
+            <td>{{history.status}}</td>
+            <td>{{history.start}}</td>
+            <td>{{history.finish}}</td>
+            <td>{{history.path.origin}}</td>
+            <td>{{history.path.destination}}</td>
             <td>
-              {{#each historico.path.stops}}
+              {{#each history.path.stops}}
                 {{this}}{{#unless @last}}, {{/unless}}
               {{/each}}
             </td>
-            <td>{{historico.approval.observation}}</td>
+            <td>{{history.approval.observation}}</td>
           </tr>
         </tbody>
       </table>
