@@ -15,6 +15,7 @@ import { History } from './history/entities/history.entity';
 import { Enterprise } from './enterprise/entities/enterprise.entity';
 import { HistoryApproval } from './history/entities/history-approval.entity';
 import { PdfModule } from './pdf/pdf.module';
+import { ExcelModule } from './excel/excel.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { PdfModule } from './pdf/pdf.module';
     RouteModule,
     HistoryModule,
     PdfModule,
+    ExcelModule,
   ],
 })
 export class AppModule {

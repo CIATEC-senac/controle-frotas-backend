@@ -20,7 +20,7 @@ import { RequestUser } from 'src/auth/auth.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 
-//@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}

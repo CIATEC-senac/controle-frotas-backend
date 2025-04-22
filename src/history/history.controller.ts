@@ -24,7 +24,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/user/entities/user.entity';
 
-//@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('history')
 export class HistoryController {
   constructor(private readonly service: HistoryService) {}
@@ -52,7 +52,7 @@ export class HistoryController {
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  //@Roles(UserRole.DRIVER)
+  @Roles(UserRole.DRIVER)
   @Post()
   async create(@Body() history: HistoryDTO, @Res() res: Response) {
     try {
