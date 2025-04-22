@@ -7,7 +7,6 @@ export const completeSelect: FindOptionsSelect<History> = {
   id: true,
   odometerInitial: true,
   odometerFinal: true,
-  elapsedDistance: true,
   imgOdometerInitial: true,
   imgOdometerFinal: true,
   pathCoordinates: {

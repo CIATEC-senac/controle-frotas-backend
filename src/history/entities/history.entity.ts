@@ -29,9 +29,6 @@ export class History {
   })
   approval: HistoryApproval;
 
-  @Column({ type: 'decimal' })
-  elapsedDistance: number;
-
   @Column({ type: 'varchar', nullable: true })
   imgOdometerInitial: string;
 

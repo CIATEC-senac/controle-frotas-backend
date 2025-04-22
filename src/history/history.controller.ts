@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -19,7 +20,7 @@ import { GcsService } from 'src/infrastructure/gcp/gcs';
 import { UserDTO } from 'src/user/dtos/user.dto';
 import { UserRole } from 'src/user/entities/user.entity';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
-import { HistoryDTO } from './dto/history.dto';
+import { CreateHistoryDTO, HistoryDTO } from './dto/history.dto';
 import { HistoryUploadDTO } from './dto/history.upload.dto';
 import { History } from './entities/history.entity';
 import { HistoryService } from './history.service';
@@ -56,10 +57,21 @@ export class HistoryController {
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
+  // Rota para buscar histórico em andamento
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Get('status/:status')
+  async findByStatus(
+    @Param('status') status: string,
+    @Query('from') from?: Date,
+    @Query('to') to?: Date,
+  ) {
+    return this.service.findByStatus(status, from, to);
+  }
+
   // Rota para criar um novo histórico
   @Roles(UserRole.DRIVER)
   @Post()
-  async create(@Body() history: HistoryDTO, @Res() res: Response) {
+  async create(@Body() history: CreateHistoryDTO, @Res() res: Response) {
     try {
       const result = await this.service.create(history);
       res.status(HttpStatus.CREATED).json(result);

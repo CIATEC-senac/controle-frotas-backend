@@ -40,9 +40,6 @@ export class CreateHistoryDTO {
   @IsString()
   imgOdometerInitial?: string;
 
-  @IsDate()
-  startedAt: Date;
-
   @IsDefined()
   driver: User;
 
@@ -57,7 +54,6 @@ export class CreateHistoryDTO {
 
     history.odometerInitial = this.odometerInitial;
     history.imgOdometerInitial = this.imgOdometerInitial;
-    history.startedAt = this.startedAt;
 
     history.driver = this.driver;
     history.vehicle = this.vehicle;
@@ -114,7 +110,6 @@ export class HistoryDTO {
 
     history.odometerInitial = this.odometerInitial;
     history.odometerFinal = this.odometerFinal;
-    history.elapsedDistance = this.elapsedDistance;
     history.imgOdometerInitial = this.imgOdometerInitial;
     history.imgOdometerFinal = this.imgOdometerFinal;
     history.pathCoordinates = this.pathCoordinates;
