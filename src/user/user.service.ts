@@ -51,8 +51,10 @@ export class UserService {
         admittedAt: true,
         status: true,
         role: true,
+        source: true,
       },
       where: { id },
+      relations: { enterprise: true },
     });
   }
 

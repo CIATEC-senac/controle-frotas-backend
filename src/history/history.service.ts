@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Between, FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
-import { HistoryDTO } from './dto/history.dto';
+import { CreateHistoryDTO, HistoryDTO } from './dto/history.dto';
 import { HistoryApproval } from './entities/history-approval.entity';
 import { History } from './entities/history.entity';
 import { completeSelect } from './select-options';
@@ -53,6 +53,51 @@ export class HistoryService {
     });
   }
 
+  async findByStatus(
+    status: string,
+    from?: Date,
+    to?: Date,
+  ): Promise<History[]> {
+    const where: Record<string, any> = {};
+
+    if (status === 'ongoing') {
+      where.endedAt = IsNull();
+    }
+
+    if (from != null && to != null) {
+      where.startedAt = Between(from, to);
+    }
+
+    return this.historyRepository.find({
+      select: {
+        route: {
+          id: true,
+          path: {
+            origin: true,
+            destination: true,
+            stops: true,
+          },
+          status: true,
+        },
+        vehicle: {
+          id: true,
+          plate: true,
+        },
+        driver: {
+          id: true,
+          name: true,
+          cnh: true,
+        },
+      },
+      where: where,
+      relations: {
+        driver: true,
+        route: true,
+        vehicle: true,
+      },
+    });
+  }
+
   // Busca um histórico específico pelo id
   async findOne(id: number): Promise<History> {
     const history = await this.historyRepository.findOne({
@@ -69,11 +114,22 @@ export class HistoryService {
       throw new Error(`Histórico com id ${id} não encontrado.`);
     }
 
+    const getFullUrl = (url?: string) => {
+      if (url) {
+        return process.env.GCS_URL + url;
+      }
+
+      return null;
+    };
+
+    history.imgOdometerInitial = getFullUrl(history.imgOdometerInitial);
+    history.imgOdometerFinal = getFullUrl(history.imgOdometerFinal);
+
     return history;
   }
 
   // Cria um novo histórico no banco de dados
-  async create(history: HistoryDTO): Promise<History> {
+  async create(history: CreateHistoryDTO): Promise<History> {
     return this.historyRepository.save(history.toEntity());
   }
 

@@ -22,7 +22,16 @@ export class MaintenanceService {
     to.setDate(to.getDate() + 7);
 
     return this.repository.find({
+      select: {
+        vehicles: {
+          id: true,
+          plate: true,
+        },
+      },
       relations: { vehicles: true },
+      order: {
+        date: 'DESC',
+      },
     });
   }
 
