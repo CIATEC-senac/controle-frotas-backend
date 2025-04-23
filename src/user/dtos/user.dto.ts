@@ -11,8 +11,8 @@ import {
   MaxLength,
 } from 'class-validator';
 import { AuthService } from 'src/auth/auth.service';
-import { User, UserRole, UserSource } from '../entities/user.entity';
 import { EnterpriseDTO } from 'src/enterprise/dtos/enterprise.dto';
+import { User, UserRole, UserSource } from '../entities/user.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -69,7 +69,11 @@ export class UserDTO {
     entity.role = this.role;
     entity.cnh = this.cnh;
     entity.source = this.source;
-    entity.password = this.password ? AuthService.encrypt(this.password) : null;
+
+    if (!this.id) {
+      entity.password = this.password ? AuthService.encrypt('senha') : null;
+    }
+
     entity.enterprise = this.enterprise?.toEntity();
 
     return entity;
