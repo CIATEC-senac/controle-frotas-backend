@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import axios from 'axios';
+import { Buffer } from 'buffer';
 import * as ExcelJS from 'exceljs';
 import { History } from 'src/history/entities/history.entity';
-import { Buffer } from 'buffer';
-import axios from 'axios';
 
 @Injectable()
 export class ExcelService {
@@ -66,7 +66,7 @@ export class ExcelService {
       history.vehicle?.plate || '-',
       history.path?.origin || '-',
       history.path?.destination || '-',
-      history.elapsedDistance ?? '-',
+      Math.abs(history.odometerFinal - history.odometerInitial) ?? '-',
       this.translateStatus(history.approval?.status),
     ];
     worksheet.addRow(formatted);

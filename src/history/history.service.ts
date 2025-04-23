@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { History } from './entities/history.entity';
-import { HistoryDTO } from './dto/history.dto';
+import { Between, FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
+import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
+import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
 import { HistoryApproval } from './entities/history-approval.entity';
+import { History } from './entities/history.entity';
+import { UnplannedStop } from './entities/unplanned-stop.entity';
+import { completeSelect } from './select-options';
 
 @Injectable()
 export class HistoryService {
@@ -13,75 +16,94 @@ export class HistoryService {
     private readonly historyRepository: Repository<History>,
     @InjectRepository(HistoryApproval)
     private readonly approvalRepository: Repository<HistoryApproval>,
+    @InjectRepository(UnplannedStop)
+    private readonly uStopRepository: Repository<UnplannedStop>,
   ) {}
 
+  /**
+   * Busca todos os históricos, com ou sem filtro por id de motorista
+   * Se o ID for passado, traz apenas os históricos daquele motorista
+   */
   async findAll(id?: number): Promise<History[]> {
-    const coordinate = { lat: true, lng: true };
+    let where: FindOptionsWhere<History>;
+
+    if (id != null) {
+      where = { driver: { id: id } };
+    }
+
+    return this.historyRepository.find({
+      select: completeSelect, // Define os campos selecionados
+      where: where,
+      relations: {
+        driver: true,
+        route: true,
+        vehicle: true,
+        approval: { approvedBy: true },
+        unplannedStops: true,
+      },
+    });
+  }
+
+  // Busca todos os históricos de uma determinada rota
+  async findByRoute(id: number): Promise<History[]> {
+    return this.historyRepository.find({
+      select: completeSelect,
+      where: { route: { id: id } },
+      relations: {
+        driver: true,
+        route: true,
+        vehicle: true,
+        approval: { approvedBy: true },
+      },
+    });
+  }
+
+  async findByStatus(
+    status: string,
+    from?: Date,
+    to?: Date,
+  ): Promise<History[]> {
+    const where: Record<string, any> = {};
+
+    if (status === 'ongoing') {
+      where.endedAt = IsNull();
+    }
+
+    if (from != null && to != null) {
+      where.startedAt = Between(from, to);
+    }
 
     return this.historyRepository.find({
       select: {
-        id: true,
-        odometerInitial: true,
-        odometerFinal: true,
-        elapsedDistance: true,
-        imgOdometerInitial: true,
-        imgOdometerFinal: true,
-        pathCoordinates: {
-          origin: coordinate,
-          destination: coordinate,
-          stops: true,
-        },
-        path: { origin: true, destination: true, stops: true },
-        startedAt: true,
-        endedAt: true,
         route: {
           id: true,
-          path: { origin: true, destination: true, stops: true },
-          pathCoordinates: {
-            origin: coordinate,
-            destination: coordinate,
+          path: {
+            origin: true,
+            destination: true,
             stops: true,
           },
-          estimatedDistance: true,
-          estimatedDuration: true,
-        },
-        driver: { id: true, name: true, cnh: true, cpf: true },
-        approval: {
-          approvedBy: {
-            id: true,
-            name: true,
-            cnh: true,
-            cpf: true,
-          },
-          date: true,
-          observation: true,
           status: true,
         },
         vehicle: {
           id: true,
           plate: true,
-          model: true,
-          type: true,
-          capacity: true,
+        },
+        driver: {
+          id: true,
+          name: true,
+          cnh: true,
         },
       },
-      where:
-        id != null
-          ? {
-              driver: { id: id },
-            }
-          : undefined,
+      where: where,
       relations: {
         driver: true,
         route: true,
         vehicle: true,
-        approval: {
-          approvedBy: true,
-        },
       },
     });
   }
 
+  // Busca um histórico específico pelo id
   async findOne(id: number): Promise<History> {
     const history = await this.historyRepository.findOne({
       where: { id },
@@ -89,9 +111,8 @@ export class HistoryService {
         driver: true,
         vehicle: true,
         route: true,
-        approval: {
-          approvedBy: true,
-        },
+        approval: { approvedBy: true },
+        unplannedStops: true,
       },
     });
 
@@ -99,19 +120,35 @@ export class HistoryService {
       throw new Error(`Histórico com id ${id} não encontrado.`);
     }
 
+    const getFullUrl = (url?: string) => {
+      if (url) {
+        return process.env.GCS_URL + url;
+      }
+
+      return null;
+    };
+
+    history.imgOdometerInitial = getFullUrl(history.imgOdometerInitial);
+    history.imgOdometerFinal = getFullUrl(history.imgOdometerFinal);
+
     return history;
   }
 
-  async create(history: HistoryDTO): Promise<History> {
+  // Cria um novo histórico no banco de dados
+  async create(history: CreateHistoryDTO): Promise<History> {
     return this.historyRepository.save(history.toEntity());
   }
 
-  async update(history: HistoryDTO): Promise<History> {
+  // Atualiza um histórico exixtente
+  // Após a atualização, busca novamente o histórico atualizado para retornar
+  async update(history: UpdateHistoryDTO): Promise<History> {
     return this.historyRepository
       .update({ id: history.id }, history.toEntity())
       .then(() => this.findOne(history.id));
   }
 
+  // Atualiza o status de aprovação de um histórico
+  // Cria um novo registro de aprovação e associa ao histórico
   async updateStatus(id: number, status: HistoryApprovalDTO): Promise<History> {
     const history = await this.historyRepository.findOne({ where: { id } });
 
@@ -119,24 +156,46 @@ export class HistoryService {
       throw new Error('Histórico não encontrado');
     }
 
+    // Cria uma nova entidade de aprovação
     const approval = new HistoryApproval();
     approval.status = status.status;
     approval.observation = status.observation;
     approval.date = status.date;
     approval.approvedBy = status.approvedBy.toEntity();
 
+    // Salva a aprovação e atualiza o histórico com ela
     return this.approvalRepository.save(approval).then((approval) => {
       history.approval = approval;
       return this.historyRepository.save(history);
     });
   }
 
-  /* async findAllByDriverId(driverId: number): Promise<History[]> {
+  // Busca todos os históricos de um motorista específico
+  async findAllByDriverId(driverId: number): Promise<History[]> {
     return this.historyRepository.find({
       where: {
         driver: { id: driverId }, // Ou outra forma de busca relacionada à rota
       },
       relations: ['route', 'driver', 'vehicle'], // Certifique-se de incluir as relações necessárias
     });
-  } */
+  }
+
+  async addUnplannedStop(driverId: number, unplannedStop: UnplannedStopDTO) {
+    if (unplannedStop.history?.id != undefined) {
+      return this.uStopRepository.save(unplannedStop.toEntity());
+    }
+
+    return this.historyRepository
+      .findOne({
+        select: { id: true },
+        where: {
+          driver: { id: driverId },
+          endedAt: IsNull(),
+        },
+      })
+      .then((history) => {
+        unplannedStop.history = history;
+        return this.uStopRepository.save(unplannedStop.toEntity());
+      });
+  }
 }

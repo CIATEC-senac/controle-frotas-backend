@@ -1,21 +1,23 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { EnterpriseModule } from './enterprise/enterprise.module';
+import { Enterprise } from './enterprise/entities/enterprise.entity';
+import { ExcelModule } from './excel/excel.module';
+import { HistoryApproval } from './history/entities/history-approval.entity';
+import { History } from './history/entities/history.entity';
+import { UnplannedStop } from './history/entities/unplanned-stop.entity';
+import { HistoryModule } from './history/history.module';
 import { AppLoggerMiddleware } from './lib/middlewares/applogger';
 import { Maintenance } from './maintenance/entities/maintenance.entity';
-import { ManutencaoModule } from './maintenance/maintenance.module';
+import { MaintenanceModule } from './maintenance/maintenance.module';
+import { PdfModule } from './pdf/pdf.module';
 import { Route } from './route/entities/route.entity';
 import { RouteModule } from './route/route.module';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { Vehicle } from './vehicle/entities/vehicle.entity';
 import { VehicleModule } from './vehicle/vehicle.module';
-import { HistoryModule } from './history/history.module';
-import { History } from './history/entities/history.entity';
-import { Enterprise } from './enterprise/entities/enterprise.entity';
-import { HistoryApproval } from './history/entities/history-approval.entity';
-import { PdfModule } from './pdf/pdf.module';
-import { ExcelModule } from './excel/excel.module';
 
 @Module({
   imports: [
@@ -34,15 +36,17 @@ import { ExcelModule } from './excel/excel.module';
         History,
         HistoryApproval,
         Enterprise,
+        UnplannedStop,
       ],
       synchronize: true,
     }),
     UserModule,
     AuthModule,
     VehicleModule,
-    ManutencaoModule,
+    MaintenanceModule,
     RouteModule,
     HistoryModule,
+    EnterpriseModule,
     PdfModule,
     ExcelModule,
   ],
