@@ -5,8 +5,15 @@ import {
 } from 'src/route/entities/route.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { HistoryApproval } from './history-approval.entity';
+import { UnplannedStop } from './unplanned-stop.entity';
 
 export type Coordinates = {
   lat: number;
@@ -55,4 +62,7 @@ export class History {
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.id)
   vehicle: Vehicle;
+
+  @OneToMany(() => UnplannedStop, (unplannedStop) => unplannedStop.history)
+  unplannedStops: UnplannedStop[];
 }
