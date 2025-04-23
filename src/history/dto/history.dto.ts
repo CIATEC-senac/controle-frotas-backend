@@ -63,19 +63,21 @@ export class CreateHistoryDTO {
   }
 }
 
-export class HistoryDTO {
+export class UpdateHistoryDTO {
+  @IsNumber()
+  id: number;
+
   @IsOptional()
   @IsNumber()
-  id?: number;
+  odometerInitial?: number;
 
+  @IsOptional()
   @IsNumber()
-  odometerInitial: number;
+  odometerFinal?: number;
 
-  @IsNumber()
-  odometerFinal: number;
-
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
-  elapsedDistance: number;
+  elapsedDistance?: number;
 
   @IsOptional()
   @IsString()
@@ -85,42 +87,43 @@ export class HistoryDTO {
   @IsString()
   imgOdometerFinal?: string;
 
-  pathCoordinates: PathCoordinatesDTO;
+  @IsOptional()
+  pathCoordinates?: PathCoordinatesDTO;
 
+  @IsOptional()
   @ValidateNested()
-  path: PathDTO;
+  path?: PathDTO;
 
+  @IsOptional()
   @IsDate()
-  startedAt: Date;
+  startedAt?: Date;
 
+  @IsOptional()
   @IsDate()
-  endedAt: Date;
-
-  @IsDefined()
-  driver: User;
-
-  @IsDefined()
-  vehicle: Vehicle;
-
-  @IsDefined()
-  route: Route;
+  endedAt?: Date;
 
   toEntity(): History {
     const history = new History();
 
-    history.odometerInitial = this.odometerInitial;
-    history.odometerFinal = this.odometerFinal;
-    history.imgOdometerInitial = this.imgOdometerInitial;
-    history.imgOdometerFinal = this.imgOdometerFinal;
-    history.pathCoordinates = this.pathCoordinates;
-    history.path = this.path;
-    history.startedAt = this.startedAt;
-    history.endedAt = this.endedAt;
+    if (this.odometerInitial != null)
+      history.odometerInitial = this.odometerInitial;
 
-    history.driver = this.driver;
-    history.vehicle = this.vehicle;
-    history.route = this.route;
-    history.approval = null;
+    if (this.odometerFinal != null) history.odometerFinal = this.odometerFinal;
+
+    if (this.imgOdometerInitial != null)
+      history.imgOdometerInitial = this.imgOdometerInitial;
+
+    if (this.imgOdometerFinal != null)
+      history.imgOdometerFinal = this.imgOdometerFinal;
+
+    if (this.pathCoordinates != null)
+      history.pathCoordinates = this.pathCoordinates;
+
+    if (this.path != null) history.path = this.path;
+
+    if (this.startedAt != null) history.startedAt = this.startedAt;
+
+    if (this.endedAt != null) history.endedAt = this.endedAt;
 
     return history;
   }

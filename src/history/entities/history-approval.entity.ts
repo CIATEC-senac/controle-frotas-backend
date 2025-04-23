@@ -24,7 +24,7 @@ export class HistoryApproval {
   @CreateDateColumn()
   date: Date;
 
-  @Column({ type: 'varchar', length: 250 })
+  @Column({ type: 'varchar', length: 250, nullable: true })
   observation: string;
 
   @ManyToOne(() => User, (user) => user.id)

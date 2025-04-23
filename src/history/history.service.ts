@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
-import { CreateHistoryDTO, HistoryDTO } from './dto/history.dto';
+import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
+import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
 import { HistoryApproval } from './entities/history-approval.entity';
 import { History } from './entities/history.entity';
+import { UnplannedStop } from './entities/unplanned-stop.entity';
 import { completeSelect } from './select-options';
 
 @Injectable()
@@ -14,6 +16,8 @@ export class HistoryService {
     private readonly historyRepository: Repository<History>,
     @InjectRepository(HistoryApproval)
     private readonly approvalRepository: Repository<HistoryApproval>,
+    @InjectRepository(UnplannedStop)
+    private readonly uStopRepository: Repository<UnplannedStop>,
   ) {}
 
   /**
@@ -107,6 +111,7 @@ export class HistoryService {
         vehicle: true,
         route: true,
         approval: { approvedBy: true },
+        unplannedStops: true,
       },
     });
 
@@ -135,7 +140,7 @@ export class HistoryService {
 
   // Atualiza um histórico exixtente
   // Após a atualização, busca novamente o histórico atualizado para retornar
-  async update(history: HistoryDTO): Promise<History> {
+  async update(history: UpdateHistoryDTO): Promise<History> {
     return this.historyRepository
       .update({ id: history.id }, history.toEntity())
       .then(() => this.findOne(history.id));
@@ -172,5 +177,24 @@ export class HistoryService {
       },
       relations: ['route', 'driver', 'vehicle'], // Certifique-se de incluir as relações necessárias
     });
+  }
+
+  async addUnplannedStop(driverId: number, unplannedStop: UnplannedStopDTO) {
+    if (unplannedStop.history?.id != undefined) {
+      return this.uStopRepository.save(unplannedStop.toEntity());
+    }
+
+    return this.historyRepository
+      .findOne({
+        select: { id: true },
+        where: {
+          driver: { id: driverId },
+          endedAt: IsNull(),
+        },
+      })
+      .then((history) => {
+        unplannedStop.history = history;
+        return this.uStopRepository.save(unplannedStop.toEntity());
+      });
   }
 }
