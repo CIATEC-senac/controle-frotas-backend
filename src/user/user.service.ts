@@ -103,4 +103,11 @@ export class UserService {
         );
     }
   }
+
+  async findManagers() {
+    return this.repository.find({
+      select: { id: true, name: true },
+      where: { role: UserRole.MANAGER },
+    });
+  }
 }
