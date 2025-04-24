@@ -32,13 +32,11 @@ export class AppLoggerMiddleware implements NestMiddleware {
     });
 
     // Se houver um tempo de simulação de resposta, aplica o delay
-    // if (process.env.MOCK_TIMEOUT) {
-    //   setTimeout(() => next(), Number(process.env.MOCK_TIMEOUT));
-    // } else {
-    //   // Continua o fluxo normalmente
-    //   next();
-    // }
-
-    next();
+    if (process.env.MOCK_TIMEOUT) {
+      setTimeout(() => next(), Number(process.env.MOCK_TIMEOUT));
+    } else {
+      // Continua o fluxo normalmente
+      next();
+    }
   }
 }

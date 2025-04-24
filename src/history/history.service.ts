@@ -98,6 +98,7 @@ export class HistoryService {
         driver: true,
         route: true,
         vehicle: true,
+        approval: { approvedBy: true },
       },
     });
   }

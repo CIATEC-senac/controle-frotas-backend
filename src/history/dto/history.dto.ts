@@ -40,6 +40,44 @@ export class CreateHistoryDTO {
   @IsString()
   imgOdometerInitial?: string;
 
+  @IsDate()
+  startedAt: Date;
+
+  @IsDefined()
+  driver: User;
+
+  @IsDefined()
+  vehicle: Vehicle;
+
+  @IsDefined()
+  route: Route;
+
+  toEntity(): History {
+    const history = new History();
+
+    history.odometerInitial = this.odometerInitial;
+    history.imgOdometerInitial = this.imgOdometerInitial;
+    history.startedAt = this.startedAt;
+
+    history.driver = this.driver;
+    history.vehicle = this.vehicle;
+    history.route = this.route;
+
+    return history;
+  }
+}
+
+export class HistoryDTO {
+  @IsOptional()
+  @IsNumber()
+  id?: number;
+
+  @IsNumber()
+  odometerInitial: number;
+
+  @IsString()
+  imgOdometerInitial?: string;
+
   @IsDefined()
   driver: User;
 
