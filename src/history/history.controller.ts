@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -17,10 +18,11 @@ import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { GcsService } from 'src/infrastructure/gcp/gcs';
 import { UserDTO } from 'src/user/dtos/user.dto';
-import { UserRole } from 'src/user/entities/user.entity';
+import { User, UserRole } from 'src/user/entities/user.entity';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
-import { HistoryDTO } from './dto/history.dto';
+import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
 import { HistoryUploadDTO } from './dto/history.upload.dto';
+import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
 import { History } from './entities/history.entity';
 import { HistoryService } from './history.service';
 
@@ -56,11 +58,29 @@ export class HistoryController {
     return res.status(HttpStatus.NOT_FOUND).send();
   }
 
+  // Rota para buscar histórico em andamento
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Get('status/:status')
+  async findByStatus(
+    @Param('status') status: string,
+    @Query('from') from?: Date,
+    @Query('to') to?: Date,
+  ) {
+    return this.service.findByStatus(status, from, to);
+  }
+
   // Rota para criar um novo histórico
   @Roles(UserRole.DRIVER)
   @Post()
-  async create(@Body() history: HistoryDTO, @Res() res: Response) {
+  async create(
+    @Body() history: CreateHistoryDTO,
+    @Req() req: Request & { user: RequestUser },
+    @Res() res: Response,
+  ) {
     try {
+      history.driver = new User();
+      history.driver.id = req.user.sub;
+
       const result = await this.service.create(history);
       res.status(HttpStatus.CREATED).json(result);
     } catch (e) {
@@ -71,7 +91,7 @@ export class HistoryController {
   // Rota para atualizar um histórico existente
   @Roles(UserRole.DRIVER)
   @Patch()
-  async update(@Body() history: HistoryDTO, @Res() res: Response) {
+  async update(@Body() history: UpdateHistoryDTO, @Res() res: Response) {
     try {
       const result = await this.service.update(history);
       res.status(HttpStatus.CREATED).json(result);
@@ -95,7 +115,7 @@ export class HistoryController {
 
   // Rota para atualização de status de um histórico (ex: aprovado ou reprovado)
   // Apenas o MANAGER pode usar
-  @Post(':id/:status')
+  @Post(':id/status')
   @Roles(UserRole.MANAGER)
   async updateStatus(
     @Param('id') id: number,
@@ -115,5 +135,14 @@ export class HistoryController {
     } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
     }
+  }
+
+  @Post('ongoing/unplanned-stop')
+  @Roles(UserRole.DRIVER)
+  async addUnplannedStop(
+    @Body() unplannedStop: UnplannedStopDTO,
+    @Req() req: Request & { user: RequestUser },
+  ) {
+    return this.service.addUnplannedStop(req.user.sub, unplannedStop);
   }
 }

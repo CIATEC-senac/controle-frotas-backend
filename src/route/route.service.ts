@@ -125,9 +125,18 @@ export class RouteService {
           capacity: true,
           model: true,
           type: true,
+          maintenances: {
+            date: true,
+            description: true,
+            id: true,
+            type: true,
+          },
         },
       },
-      relations: { vehicle: true, driver: true },
+      relations: {
+        vehicle: { maintenances: true },
+        driver: true,
+      },
     });
   }
 
