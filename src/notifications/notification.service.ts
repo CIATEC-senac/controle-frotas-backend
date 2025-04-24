@@ -20,29 +20,42 @@ export class NotificationService {
     return this.notificationRepository.save(entity);
   }
 
-  findByUser(userId: number) {
-    return this.notificationRepository.find({
+  async findByUser(userId: number) {
+    const notifications = await this.notificationUserRepository.find({
       select: {
-        date: true,
-        id: true,
-        message: true,
-        link: true,
+        notification: {
+          id: true,
+          date: true,
+          message: true,
+          link: true,
+        },
       },
       where: {
-        users: {
+        user: {
           id: userId,
         },
       },
+      relations: {
+        notification: true,
+      },
       order: {
-        date: 'DESC',
+        notification: {
+          date: 'DESC',
+        },
       },
     });
+
+    return notifications.map(({ read, id, notification }) => ({
+      ...notification,
+      read,
+      id,
+    }));
   }
 
   setRead(id: number, userId: number) {
     return this.notificationUserRepository.update(
-      { read: true },
       { id, user: { id: userId } },
+      { read: true },
     );
   }
 }

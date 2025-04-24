@@ -57,8 +57,6 @@ import { VehicleModule } from './vehicle/vehicle.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AppLoggerMiddleware)
-      .forRoutes('user', 'vehicle', 'maintenance', 'route', 'history', 'pdf');
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
   }
 }
