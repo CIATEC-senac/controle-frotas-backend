@@ -40,9 +40,8 @@ export class PdfController {
     };
 
     const translatedStatus = {
-      0: 'Pendente',
-      1: 'Aprovado',
-      2: 'Reprovado',
+      0: 'Aprovado',
+      1: 'Reprovado',
     };
 
     const date = history.startedAt
