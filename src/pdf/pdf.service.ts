@@ -3,36 +3,52 @@ import * as puppeteer from 'puppeteer';
 
 @Injectable()
 export class PdfService {
-  async generatePdf(url: string) {
-    const browser = await puppeteer.launch({
+  private browser: puppeteer.Browser;
+
+  constructor() {
+    puppeteer
+      .launch({
+        headless: true,
+        timeout: 0,
+        pipe: true,
+        executablePath: '/usr/bin/chromium',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      })
+      .then((browser) => {
+        this.browser = browser;
+      });
+  }
+
+  async launchBrowser() {
+    if (this.browser) {
+      return;
+    }
+
+    this.browser = await puppeteer.launch({
       headless: true,
-      timeout: 1000,
+      timeout: 0,
+      pipe: true,
       executablePath: '/usr/bin/chromium',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+  }
 
-    new Logger().debug('Puppeteer launched');
+  async generatePdf(url: string) {
+    await this.launchBrowser();
 
-    const page = await browser.newPage();
-
-    new Logger().debug('New page created');
+    const page = await this.browser.newPage();
 
     try {
-      await page.goto(url, { waitUntil: 'networkidle0' });
-      new Logger().debug('Page loaded');
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
     } catch (error) {
       new Logger().error(`Error loading page: ${error.message}`);
     }
 
     try {
       const pdf = await page.pdf({ format: 'A4' });
-      new Logger().debug('PDF generated');
       return pdf;
     } catch (error) {
       new Logger().error(`Error generating PDF: ${error.message}`);
-    } finally {
-      await browser.close();
-      new Logger().debug('Browser closed');
     }
   }
 }
