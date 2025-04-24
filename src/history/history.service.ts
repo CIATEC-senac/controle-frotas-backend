@@ -40,6 +40,9 @@ export class HistoryService {
         vehicle: true,
         approval: { approvedBy: true },
       },
+      order: {
+        startedAt: 'DESC',
+      },
     });
   }
 
