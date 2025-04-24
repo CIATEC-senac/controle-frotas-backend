@@ -70,8 +70,8 @@ export class UserDTO {
     entity.cnh = this.cnh;
     entity.source = this.source;
 
-    if (!this.id) {
-      entity.password = this.password ? AuthService.encrypt('senha') : null;
+    if (this.id == undefined) {
+      entity.password = AuthService.encrypt('senha');
     }
 
     entity.enterprise = this.enterprise?.toEntity();
