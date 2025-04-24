@@ -83,7 +83,7 @@ export class PdfController {
         endedAt: endedAt ?? '-',
         unplannedStops: (history.unplannedStops ?? []).map((stop) => {
           return {
-            date: dayjs(stop.date).format('DD/NN/YYYY HH:mm:ss'),
+            date: dayjs(stop.date).format('DD/MM/YYYY HH:mm:ss'),
             type: unplannedStopOptions[stop.type],
           };
         }),
