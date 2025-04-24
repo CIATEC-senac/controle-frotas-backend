@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindOptionsWhere, IsNull, Repository } from 'typeorm';
+
+import { CreateNotificationDTO } from 'src/notifications/dto/notification.dto';
+import { NotificationService } from 'src/notifications/notification.service';
+import { UserService } from 'src/user/user.service';
 import { HistoryApprovalDTO } from './dto/history.approval.dto';
 import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
 import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
@@ -8,6 +12,16 @@ import { HistoryApproval } from './entities/history-approval.entity';
 import { History } from './entities/history.entity';
 import { UnplannedStop } from './entities/unplanned-stop.entity';
 import { completeSelect } from './select-options';
+
+const leftPad = (str: string, length: number, complete: string) => {
+  let padded = str;
+
+  while (padded.length < length) {
+    padded = complete + padded;
+  }
+
+  return padded;
+};
 
 @Injectable()
 export class HistoryService {
@@ -18,6 +32,8 @@ export class HistoryService {
     private readonly approvalRepository: Repository<HistoryApproval>,
     @InjectRepository(UnplannedStop)
     private readonly uStopRepository: Repository<UnplannedStop>,
+    private readonly notificationService: NotificationService,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -147,7 +163,28 @@ export class HistoryService {
   async update(history: UpdateHistoryDTO): Promise<History> {
     return this.historyRepository
       .update({ id: history.id }, history.toEntity())
-      .then(() => this.findOne(history.id));
+      .then(async () => {
+        const updatedHistory = await this.findOne(history.id);
+
+        if (history.endedAt) {
+          const notificationDto = new CreateNotificationDTO();
+
+          notificationDto.link = `/routes/${updatedHistory.route.id}/history/${updatedHistory.id}`;
+          notificationDto.message = `Rota ${leftPad(updatedHistory.route.id.toString(), 4, '0')} foi finalizada`;
+
+          notificationDto.users = await this.userService
+            .findManagers()
+            .then((managers) => managers.map(({ id }) => id));
+
+          this.notificationService.create(notificationDto).catch((e) => {
+            new Logger(HistoryService.name).warn(
+              `Could not create notifications for route: ${updatedHistory.id}. Reason: ${e.message}`,
+            );
+          });
+        }
+
+        return updatedHistory;
+      });
   }
 
   // Atualiza o status de aprovação de um histórico

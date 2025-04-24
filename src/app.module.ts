@@ -11,6 +11,8 @@ import { HistoryModule } from './history/history.module';
 import { AppLoggerMiddleware } from './lib/middlewares/applogger';
 import { Maintenance } from './maintenance/entities/maintenance.entity';
 import { MaintenanceModule } from './maintenance/maintenance.module';
+import { NotificationUser } from './notifications/entities/notification-user.entity';
+import { Notification } from './notifications/entities/notification.entity';
 import { PdfModule } from './pdf/pdf.module';
 import { Route } from './route/entities/route.entity';
 import { RouteModule } from './route/route.module';
@@ -37,6 +39,8 @@ import { VehicleModule } from './vehicle/vehicle.module';
         HistoryApproval,
         Enterprise,
         UnplannedStop,
+        Notification,
+        NotificationUser,
       ],
       synchronize: true,
     }),
