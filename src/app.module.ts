@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { EnterpriseModule } from './enterprise/enterprise.module';
 import { Enterprise } from './enterprise/entities/enterprise.entity';
+import { ExcelModule } from './excel/excel.module';
 import { HistoryApproval } from './history/entities/history-approval.entity';
 import { History } from './history/entities/history.entity';
 import { UnplannedStop } from './history/entities/unplanned-stop.entity';
@@ -47,6 +48,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
     HistoryModule,
     EnterpriseModule,
     PdfModule,
+    ExcelModule,
   ],
 })
 export class AppModule {

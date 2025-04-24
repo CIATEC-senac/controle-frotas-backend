@@ -1,12 +1,10 @@
 import { Controller, Get, Param, Render, StreamableFile } from '@nestjs/common';
 import { Buffer } from 'buffer';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
+
 import { Roles } from 'src/auth/roles.decorator';
 import { HistoryService } from 'src/history/history.service';
-import { RouteService } from 'src/route/route.service';
 import { UserRole } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
-import { VehicleService } from 'src/vehicle/vehicle.service';
 import { PdfService } from './pdf.service';
 
 // @UseGuards(AuthGuard, RolesGuard)
@@ -14,68 +12,48 @@ import { PdfService } from './pdf.service';
 export class PdfController {
   constructor(
     private readonly pdfService: PdfService,
-    private readonly userService: UserService,
-    private readonly vehicleService: VehicleService,
-    private readonly routeService: RouteService,
     private readonly historyService: HistoryService,
   ) {}
 
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  @Get()
+  @Get(':id')
   async printPDF(@Param('id') id: string) {
-    const userId = await this.userService.findOneById(Number(id));
-    const url = `http://localhost:3000/pdf/print/${userId}`;
-
+    const url = `http://localhost:3000/pdf/print/${id}`;
     const data = await this.pdfService.generatePdf(url);
     return new StreamableFile(Buffer.from(data));
   }
 
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  @Get('print/:userId')
-  @Render('templates/route')
-  async renderPDF(@Param('userId') userId: string) {
-    const user = await this.userService.findOneById(Number(userId));
-    const vehicle = await this.vehicleService.findOneBy(Number(userId));
-    const route = await this.routeService.findByDriverId(Number(userId));
-    const history = await this.historyService.findAllByDriverId(Number(userId));
+  @Get('print/:id')
+  @Render('templates/route') // Certifique-se que esse template existe!
+  async renderPDF(@Param('id') id: string) {
+    const history = await this.historyService.findOne(Number(id));
 
-    // Tradução do cargo
-    const cargoTraduzido = {
+    const translatedRoles = {
       0: 'Administrador',
       1: 'Gerente',
       2: 'Motorista',
     };
 
-    // Tradução do status
-    const statusTraduzido = {
+    const translatedStatus = {
       0: 'Pendente',
       1: 'Aprovado',
       2: 'Reprovado',
     };
 
-    // Formatar histórico
-    const historicoFormatado = history.map((h) => {
-      const start = moment(h.startedAt);
-      const end = moment(h.endedAt);
-
-      return {
-        ...h,
-        data: start.format('DD/MM/YYYY'),
-        inicio: start.format('HH:mm'),
-        termino: end.format('HH:mm'),
-        status: statusTraduzido[h.approval.status] || 'Desconhecido',
-      };
-    });
+    const start = history.startedAt ? dayjs(history.startedAt) : null;
+    const end = history.endedAt ? dayjs(history.endedAt) : null;
 
     return {
-      data: moment().format('DD/MM/YYYY'),
-      user: {
-        ...user,
-        role: cargoTraduzido[user.role] || 'Desconhecido',
+      date: dayjs().format('DD/MM/YYYY'),
+      history: {
+        ...history,
+        date: start ? start.format('DD/MM/YYYY') : '-',
+        start: start ? start.format('HH:mm') : '-',
+        finish: end ? end.format('HH:mm') : '-',
+        status: translatedStatus[history.approval?.status] ?? 'Pendente',
+        role: translatedRoles[history.driver?.role] ?? 'Desconhecido',
       },
-      vehicle,
-      route,
-      history: historicoFormatado,
     };
   }
 }

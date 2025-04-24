@@ -16,16 +16,11 @@
       background-color: #e9ecef; color: #333; } tfoot td { font-weight: bold;
       background-color: #f1f1f1; } .flex-container { display: flex;
       justify-content: space-between; gap: 20px; } .flex-container div { flex:
-      1; } .history-table { width: 100%; border-collapse: collapse; margin-top:
-      16px; } .history-table th, .history-table td { border: 1px solid #dee2e6;
-      padding: 10px; text-align: left; font-size: 14px; } .history-table th {
-      background-color: #e9ecef; color: #333; } .history-table { width: 100%;
-      border-collapse: collapse; margin-top: 16px; } .history-table th,
-      .history-table td { border: 1px solid #dee2e6; padding: 10px; text-align:
-      left; font-size: 14px; } .history-table th { background-color: #e9ecef;
-      color: #333; }
+      1; }
+
     </style>
   </head>
+
   <body>
     <div class='header'>
       <img
@@ -45,23 +40,23 @@
       <div class='flex-container'>
         <div>
           <h3>Motorista</h3>
-          <p><b>Nome:</b> {{user.name}}</p>
-          <p><b>Matrícula:</b> {{user.registration}}</p>
-          <p><b>CNH:</b> {{user.cnh}}</p>
-          <p><b>Cargo:</b> {{user.role}}</p>
+          <p><b>Nome:</b> {{history.driver.name}}</p>
+          <p><b>Matrícula:</b> {{history.driver.registration}}</p>
+          <p><b>CNH:</b> {{history.driver.cnh}}</p>
+          <p><b>Cargo:</b> {{history.role}}</p>
         </div>
         <div>
           <h3>Veículo</h3>
-          <p><b>Modelo:</b> {{vehicle.model}}</p>
-          <p><b>Placa:</b> {{vehicle.plate}}</p>
-          <p><b>Ano de Fabricação:</b> {{vehicle.year}}</p>
-          <p><b>Capacidade:</b> {{vehicle.capacity}} pessoas</p>
+          <p><b>Modelo:</b> {{history.vehicle.model}}</p>
+          <p><b>Placa:</b> {{history.vehicle.plate}}</p>
+          <p><b>Ano de Fabricação:</b> {{history.vehicle.year}}</p>
+          <p><b>Capacidade:</b> {{history.vehicle.capacity}} pessoas</p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>Rotas Realizadas</h2>
+      <h2>Rota Registrada</h2>
       <table>
         <thead>
           <tr>
@@ -73,73 +68,59 @@
           </tr>
         </thead>
         <tbody>
-          {{#each route}}
-            <tr>
-              <td>{{this.path.origin}}</td>
-              <td>{{this.path.destination}}</td>
-              <td>
-                {{#each this.path.stops}}
-                  {{this}}{{#unless @last}}, {{/unless}}
-                {{/each}}
-              </td>
-              <td>{{this.estimatedDistance}}</td>
-              <td>{{this.estimatedDuration}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-        <tfoot>
           <tr>
-            <td colspan='5'>Total de rotas: {{route.length}}</td>
+            <td>{{history.route.path.origin}}</td>
+            <td>{{history.route.path.destination}}</td>
+            <td>
+              {{#each history.route.path.stops}}
+                {{this}}{{#unless @last}}, {{/unless}}
+              {{/each}}
+            </td>
+            <td>{{history.route.estimatedDistance}}</td>
+            <td>{{history.route.estimatedDuration}}</td>
           </tr>
-        </tfoot>
+        </tbody>
       </table>
     </section>
 
     <section>
-      <h2>Histórico de Rotas</h2>
-      {{#if history}}
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Odômetro Inicial</th>
-              <th>Odômetro Final</th>
-              <th>Distância Percorrida</th>
-              <th>Observações</th>
-              <th>Status</th>
-              <th>Início</th>
-              <th>Término</th>
-              <th>Origem</th>
-              <th>Destino</th>
-              <th>Paradas</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each history}}
-              <tr>
-                <td>{{this.data}}</td>
-                <td>{{this.odometerInitial}} km</td>
-                <td>{{this.odometerFinal}} km</td>
-                <td>{{this.elapsedDistance}} km</td>
-                <td>{{this.observation}}</td>
-                <td>{{this.status}}</td>
-                <td>{{this.inicio}}</td>
-                <td>{{this.termino}}</td>
-                <td>{{this.path.origin}}</td>
-                <td>{{this.path.destination}}</td>
-                <td>
-                  {{#each this.path.stops}}
-                    {{this}}{{#unless @last}}, {{/unless}}
-                  {{/each}}
-                </td>
-              </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      {{else}}
-        <p>Nenhum histórico encontrado.</p>
-      {{/if}}
+      <h2>Histórico</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Odômetro Inicial</th>
+            <th>Odômetro Final</th>
+            <th>Distância Percorrida</th>
+            <th>Status</th>
+            <th>Início</th>
+            <th>Término</th>
+            <th>Origem</th>
+            <th>Destino</th>
+            <th>Paradas</th>
+            <th>Observações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{history.date}}</td>
+            <td>{{history.odometerInitial}} km</td>
+            <td>{{history.odometerFinal}} km</td>
+            <td>{{history.elapsedDistance}} km</td>
+            <td>{{history.status}}</td>
+            <td>{{history.start}}</td>
+            <td>{{history.finish}}</td>
+            <td>{{history.path.origin}}</td>
+            <td>{{history.path.destination}}</td>
+            <td>
+              {{#each history.path.stops}}
+                {{this}}{{#unless @last}}, {{/unless}}
+              {{/each}}
+            </td>
+            <td>{{history.approval.observation}}</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
-
   </body>
 </html>
