@@ -1,126 +1,209 @@
 <html lang='pt-BR'>
-  <head>
-    <meta charset='UTF-8' />
-    <title>Relatório de Rotas</title>
-    <style>
-      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 40px; background-color: #fff; color: #333; } .header { display:
-      flex; justify-content: space-between; align-items: center; margin-bottom:
-      30px; } .header img { height: 60px; } .header h1 { font-size: 24px; color:
-      #003366; margin: 0; } section { background-color: #fff; border-radius:
-      8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 0 8px rgba(0, 0, 0,
-      0.05); } h2 { border-left: 4px solid #007bff; padding-left: 10px;
-      margin-bottom: 16px; color: #003366; } p { margin: 6px 0; } table { width:
-      100%; border-collapse: collapse; margin-top: 16px; } th, td { border: 1px
-      solid #dee2e6; padding: 10px; text-align: left; font-size: 14px; } th {
-      background-color: #e9ecef; color: #333; } tfoot td { font-weight: bold;
-      background-color: #f1f1f1; } .flex-container { display: flex;
-      justify-content: space-between; gap: 20px; } .flex-container div { flex:
-      1; }
 
-    </style>
-  </head>
+<head>
+  <meta charset='UTF-8' />
+  <title>Relatório de Rotas</title>
 
-  <body>
-    <div class='header'>
-      <img
-        style='height: 130px; width: 150px;'
-        src='https://static.wixstatic.com/media/f19bb9_c7bbcca3a3684546bb14455c45edff18~mv2.png/v1/fill/w_260,h_122,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO.png'
-        alt='Logo da Empresa'
-      />
-      <h1>Relatório de Rotas</h1>
-    </div>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 40px;
+      background-color: #fff;
+      color: #333;
+      width: 210mm;
+      height:
+        297mm;
+    }
 
-    <section>
-      <p><b>Data de geração:</b> {{data}}</p>
-    </section>
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
 
-    <section>
-      <h2>Dados do Motorista e Veículo</h2>
-      <div class='flex-container'>
-        <div>
-          <h3>Motorista</h3>
-          <p><b>Nome:</b> {{history.driver.name}}</p>
-          <p><b>Matrícula:</b> {{history.driver.registration}}</p>
-          <p><b>CNH:</b> {{history.driver.cnh}}</p>
-          <p><b>Cargo:</b> {{history.role}}</p>
-        </div>
-        <div>
-          <h3>Veículo</h3>
-          <p><b>Modelo:</b> {{history.vehicle.model}}</p>
-          <p><b>Placa:</b> {{history.vehicle.plate}}</p>
-          <p><b>Ano de Fabricação:</b> {{history.vehicle.year}}</p>
-          <p><b>Capacidade:</b> {{history.vehicle.capacity}} pessoas</p>
-        </div>
+    .header img {
+      height: 60px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: #003366;
+      margin: 0;
+    }
+
+    section {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom:
+        30px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      border-left: 4px solid #007bff;
+      padding-left: 10px;
+      margin-bottom: 16px;
+      color: #003366;
+    }
+
+    p {
+      margin: 6px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    th,
+    td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #e9ecef;
+      color: #333;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background-color: #f1f1f1;
+    }
+
+    .flex-container {
+      display: flex;
+      justify-content: space-between;
+      gap:
+        20px;
+    }
+
+    .flex-container div {
+      flex: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class='header'>
+    <img style='height: 130px; width: 150px;'
+      src='https://static.wixstatic.com/media/f19bb9_c7bbcca3a3684546bb14455c45edff18~mv2.png/v1/fill/w_260,h_122,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO.png'
+      alt='Logo da Empresa' />
+    <h1>Relatório de Rotas</h1>
+  </div>
+
+  <section>
+    <p><b>Data de geração:</b> {{date}}</p>
+  </section>
+
+  <section>
+    <h2>Dados do Motorista e Veículo</h2>
+    <div class='flex-container'>
+      <div>
+        <h3>Motorista</h3>
+        <p><b>Nome:</b> {{history.driver.name}}</p>
+        <p><b>Matrícula:</b> {{history.driver.registration}}</p>
+        <p><b>CNH:</b> {{history.driver.cnh}}</p>
       </div>
-    </section>
+      <div>
+        <h3>Veículo</h3>
+        <p><b>Modelo:</b> {{history.vehicle.model}}</p>
+        <p><b>Placa:</b> {{history.vehicle.plate}}</p>
+        <p><b>Ano de Fabricação:</b> {{history.vehicle.year}}</p>
+        <p><b>Capacidade:</b> {{history.vehicle.capacity}} pessoas</p>
+      </div>
+    </div>
+  </section>
 
-    <section>
-      <h2>Rota Registrada</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Origem</th>
-            <th>Destino</th>
-            <th>Paradas</th>
-            <th>Distância Estimada (km)</th>
-            <th>Duração Estimada (min)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{history.route.path.origin}}</td>
-            <td>{{history.route.path.destination}}</td>
-            <td>
-              {{#each history.route.path.stops}}
-                {{this}}{{#unless @last}}, {{/unless}}
-              {{/each}}
-            </td>
-            <td>{{history.route.estimatedDistance}}</td>
-            <td>{{history.route.estimatedDuration}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <section>
+    <h2>Status</h2>
+    <div class='flex-container'>
+      <div>
+        <p><b>Status:</b> {{history.status}}</p>
+        <p><b>Responsável:</b> {{history.approval.approvedBy.name}}</p>
+        <p><b>Matrícula:</b> {{history.aprroval.approvedBy.registration}}</p>
+        <p><b>Observações:</b> {{history.approval.observation}}</p>
+      </div>
+    </div>
+  </section>
 
-    <section>
-      <h2>Histórico</h2>
-      <table>
-        <thead>
+  <section>
+    <h2>Rota Registrada</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Origem</th>
+          <th>Destino</th>
+          <th>Paradas</th>
+          <th>Distância Estimada</th>
+          <th>Duração Estimada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{history.route.path.origin}}</td>
+          <td>{{history.route.path.destination}}</td>
+          <td>
+            {{#each history.route.path.stops}}
+            {{this}}{{#unless @last}}<br> {{/unless}}
+            {{/each}}
+          </td>
+          <td>{{history.route.estimatedDistance}} Km</td>
+          <td>{{history.route.estimatedDuration}} horas</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Histórico</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Odômetro Inicial</th>
+          <th>Odômetro Final</th>
+          <th>Distância Percorrida</th>
+          <th>Início</th>
+          <th>Término</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{history.date}}</td>
+          <td>{{history.odometerInitial}} km</td>
+          <td>{{history.odometerFinal}} km</td>
+          <td>{{history.elapsedDistance}} km</td>
+          <td>{{history.startedAt}}</td>
+          <td>{{history.endedAt}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>  
+    <h2>Paradas não programadas</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Motivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each history.unplannedStops}}
           <tr>
-            <th>Data</th>
-            <th>Odômetro Inicial</th>
-            <th>Odômetro Final</th>
-            <th>Distância Percorrida</th>
-            <th>Status</th>
-            <th>Início</th>
-            <th>Término</th>
-            <th>Origem</th>
-            <th>Destino</th>
-            <th>Paradas</th>
-            <th>Observações</th>
+            <td>{{this.date}}</td>
+            <td>{{this.type}} km</td>
           </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{history.date}}</td>
-            <td>{{history.odometerInitial}} km</td>
-            <td>{{history.odometerFinal}} km</td>
-            <td>{{history.elapsedDistance}} km</td>
-            <td>{{history.status}}</td>
-            <td>{{history.start}}</td>
-            <td>{{history.finish}}</td>
-            <td>{{history.path.origin}}</td>
-            <td>{{history.path.destination}}</td>
-            <td>
-              {{#each history.path.stops}}
-                {{this}}{{#unless @last}}, {{/unless}}
-              {{/each}}
-            </td>
-            <td>{{history.approval.observation}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  </body>
+        {{/each}}
+      </tbody>
+    </table></section>
+</body>
 </html>

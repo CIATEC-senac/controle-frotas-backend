@@ -45,16 +45,48 @@ export class PdfController {
       2: 'Reprovado',
     };
 
-    const start = history.startedAt ? dayjs(history.startedAt) : null;
-    const end = history.endedAt ? dayjs(history.endedAt) : null;
+    const date = history.startedAt
+      ? dayjs(history.startedAt).format('DD/MM/YYYY')
+      : '';
+
+    const startedAt = history.startedAt
+      ? dayjs(history.startedAt).format('HH:mm')
+      : null;
+
+    const endedAt = history.endedAt
+      ? dayjs(history.endedAt).format('HH:mm')
+      : null;
+
+    history.route.estimatedDistance = Number(
+      (history.route.estimatedDistance / 1000).toFixed(2),
+    );
+
+    history.route.estimatedDuration = Number(
+      (history.route.estimatedDistance / 60).toFixed(2),
+    );
+
+    const unplannedStopOptions = {
+      0: 'Trânsito',
+      1: 'Via interditada',
+      2: 'Faixa bloqueada',
+      3: 'Combustível',
+      4: 'Problema mecânico',
+      5: 'Acidente',
+    };
 
     return {
-      date: dayjs().format('DD/MM/YYYY'),
+      date: dayjs().format('DD/MM/YYYY HH:mm:ss'),
       history: {
         ...history,
-        date: start ? start.format('DD/MM/YYYY') : '-',
-        start: start ? start.format('HH:mm') : '-',
-        finish: end ? end.format('HH:mm') : '-',
+        date: date,
+        startedAt: startedAt ?? '-',
+        endedAt: endedAt ?? '-',
+        unplannedStops: (history.unplannedStops ?? []).map((stop) => {
+          return {
+            date: dayjs(stop.date).format('DD/NN/YYYY HH:mm:ss'),
+            type: unplannedStopOptions[stop.type],
+          };
+        }),
         status: translatedStatus[history.approval?.status] ?? 'Pendente',
         role: translatedRoles[history.driver?.role] ?? 'Desconhecido',
       },
