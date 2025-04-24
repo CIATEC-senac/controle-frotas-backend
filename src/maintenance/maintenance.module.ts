@@ -10,4 +10,4 @@ import { Maintenance } from './entities/maintenance.entity';
   exports: [MaintenanceService],
   imports: [TypeOrmModule.forFeature([Maintenance])],
 })
-export class ManutencaoModule {}
+export class MaintenanceModule {}

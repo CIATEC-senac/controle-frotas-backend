@@ -21,17 +21,20 @@ export class GeoCodeService {
   // Função para geocodificar um endereço e retornar coordenadas
   public async getAddress(address: string): Promise<Coordinate> {
     const request = this.axios.get('/maps/api/geocode/json', {
-      params: { address: address, key: process.env.GCP_APIKEY },
+      params: { address: address, key: process.env.GCP_APIKEY }, // chave da api
     });
 
     return request
       .then((response) => {
+        // Faz o parse manual do conteúdo da resposta
         const { results } = JSON.parse(response.data);
 
+        // Se não houver resultados dispara erro
         if (!results || !results[0]) {
           throw new Error(`Endereço não encontrado: ${address}`);
         }
 
+        // retorna o primeiro resultado como um objeto do tipo coordinate
         return <Coordinate>{
           lat: results[0].geometry.location.lat,
           lng: results[0].geometry.location.lng,
@@ -44,21 +47,27 @@ export class GeoCodeService {
       });
   }
 
+  /**
+   * Recebe uma rota e retorna as informações completas de coordenadas:
+   * origem, destino e paradas, além de buscar a rota no Google Maps.
+   */
   public async getRoute(route: Route) {
     const origin = await this.getAddress(route.path?.origin);
     const destination = await this.getAddress(route.path?.destination);
 
-    // Geocodificar os waypoints (endereços) e converte para coordenadas
+    // Geocodificar os waypoints (paradas) e converte para coordenadas
     const geocodedWaypoints = await Promise.all(
       route.path.stops.map((stop) => this.getAddress(stop)),
     );
 
+    // Salva as coordenadas no objeto route
     route.pathCoordinates = {
       stops: geocodedWaypoints,
       origin: origin,
       destination: destination,
     };
 
+    // Retorna os dados da rota calculada pela API do Google Maps
     return await this.getGoogleRoute(
       route.path.origin,
       route.path.destination,
@@ -66,11 +75,16 @@ export class GeoCodeService {
     );
   }
 
+  /**
+   * Consulta a API de direções do Google Maps para obter a melhor rota
+   * entre origem, destino e os pontos de parada (waypoints).
+   */
   public async getGoogleRoute(
     origin: string,
     destination: string,
     waypoints: Coordinates[],
   ) {
+    // Formata os waypoints em uma string esperada pela API do Google
     const waypointsString = waypoints
       .map((wp) => `${wp.lat},${wp.lng}`)
       .join('|');
@@ -80,9 +94,9 @@ export class GeoCodeService {
         params: {
           origin: origin,
           destination: destination,
-          waypoints: `optimize:true|${waypointsString}`,
+          waypoints: `optimize:true|${waypointsString}`, // Otimiza a ordem das paradas
           key: process.env.GCP_APIKEY,
-          mode: 'driving',
+          mode: 'driving', // Define que as rotas é para veículo
         },
       })
       .then((response) => {
@@ -92,7 +106,7 @@ export class GeoCodeService {
           throw new Error('Erro ao obter dados da rota.');
         }
 
-        return routes[0];
+        return routes[0]; // Retorna a primeira rota encontrada
       })
       .catch((error) => {
         throw new Error(

@@ -1,16 +1,21 @@
 import {
-  IsArray,
   IsDate,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
-import { Maintenance, MaintenanceType } from '../entities/maintenance.entity';
 import { VehicleDTO } from 'src/vehicle/dtos/vehicle.dto';
+import { Maintenance, MaintenanceType } from '../entities/maintenance.entity';
+
+export class MaintenanceVehicleDTO {
+  @IsNumber()
+  id: number;
+}
 
 export class MaintenanceDTO {
+  @IsOptional()
   @IsNumber()
   id: number;
 
@@ -24,9 +29,8 @@ export class MaintenanceDTO {
   @IsDate()
   date: Date;
 
-  @IsArray()
-  @IsNotEmpty()
-  vehicles: VehicleDTO[];
+  @ValidateNested()
+  vehicles: MaintenanceVehicleDTO[];
 
   toEntity() {
     const entity = new Maintenance();
@@ -35,7 +39,11 @@ export class MaintenanceDTO {
     entity.type = this.type;
     entity.date = this.date;
 
-    entity.vehicles = this.vehicles.map((vehicle) => vehicle.toEntity());
+    entity.vehicles = this.vehicles.map((vehicle) => {
+      const vehicleDto = new VehicleDTO();
+      vehicleDto.id = vehicle.id;
+      return vehicleDto.toEntity();
+    });
 
     return entity;
   }

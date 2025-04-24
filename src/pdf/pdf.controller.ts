@@ -1,21 +1,13 @@
-import {
-  Controller,
-  Get,
-  Param,
-  StreamableFile,
-  Render,
-  UseGuards,
-} from '@nestjs/common';
-import { PdfService } from './pdf.service';
+import { Controller, Get, Param, Render, StreamableFile } from '@nestjs/common';
 import { Buffer } from 'buffer';
-import { HistoryService } from 'src/history/history.service';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/user/entities/user.entity';
 import * as dayjs from 'dayjs';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
 
-@UseGuards(AuthGuard, RolesGuard)
+import { Roles } from 'src/auth/roles.decorator';
+import { HistoryService } from 'src/history/history.service';
+import { UserRole } from 'src/user/entities/user.entity';
+import { PdfService } from './pdf.service';
+
+// @UseGuards(AuthGuard, RolesGuard)
 @Controller('pdf')
 export class PdfController {
   constructor(

@@ -5,8 +5,15 @@ import {
 } from 'src/route/entities/route.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { HistoryApproval } from './history-approval.entity';
+import { UnplannedStop } from './unplanned-stop.entity';
 
 export type Coordinates = {
   lat: number;
@@ -21,16 +28,13 @@ export class History {
   @Column({ type: 'int' })
   odometerInitial: number;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   odometerFinal: number;
 
   @ManyToOne(() => HistoryApproval, (approval) => approval.id, {
     nullable: true,
   })
   approval: HistoryApproval;
-
-  @Column({ type: 'decimal', nullable: true })
-  elapsedDistance: number;
 
   @Column({ type: 'varchar', nullable: true })
   imgOdometerInitial: string;
@@ -58,4 +62,7 @@ export class History {
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.id)
   vehicle: Vehicle;
+
+  @OneToMany(() => UnplannedStop, (unplannedStop) => unplannedStop.history)
+  unplannedStops: UnplannedStop[];
 }
