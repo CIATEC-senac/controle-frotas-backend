@@ -6,110 +6,139 @@ import axios from 'axios';
 
 @Injectable()
 export class ExcelService {
-  async generateExcel(history: History): Promise<Buffer> {
+  async generateExcel(
+    history: History,
+    generatedBy = 'Sistema',
+  ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Relatório de Rotas');
+    const worksheet = workbook.addWorksheet('Relatório de Rota');
 
-    // TÍTULO - Mesclar A1 até G1
-    worksheet.mergeCells('A1:G1');
-    const titleCell = worksheet.getCell('A1');
-    titleCell.value = `Relatório da Rota ${history.id}`;
-    titleCell.font = { size: 16, bold: true };
-    titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+    worksheet.mergeCells('A1:F1');
+    worksheet.getCell('A1').value = `Relatório da Rota #${history.id}`;
+    worksheet.getCell('A1').font = { size: 16, bold: true };
+    worksheet.getCell('A1').alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+    };
+    worksheet.getRow(1).height = 40;
 
-    // Define altura da linha 1
-    worksheet.getRow(1).height = 50;
+    worksheet.mergeCells('A2:F2');
+    worksheet.getCell('A2').value =
+      `Gerado em ${new Date().toLocaleString('pt-BR')} por ${generatedBy}`;
+    worksheet.getCell('A2').font = { italic: true, size: 10 };
+    worksheet.getCell('A2').alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+    };
 
-    // Logo no canto superior direito (coluna G)
     const logoUrl =
       'https://static.wixstatic.com/media/f19bb9_c7bbcca3a3684546bb14455c45edff18~mv2.png/v1/fill/w_260,h_122,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO.png';
     const logoImageId = await this.loadImageFromUrl(workbook, logoUrl);
     worksheet.addImage(logoImageId, {
-      tl: { col: 6, row: 0 }, // Coluna G (índice 6), linha 0
+      tl: { col: 5.5, row: 0 },
       ext: { width: 120, height: 60 },
     });
 
-    // Cabeçalho na linha 2
-    const headerValues = [
-      'Data',
-      'Motorista',
-      'Placa',
-      'Origem',
-      'Destino',
-      'Distância ',
-      'Status',
-    ];
-    worksheet.addRow(headerValues);
+    let currentRow = 4;
 
-    // Estilização do cabeçalho (linha 2)
-    const headerRow = worksheet.getRow(2);
-    headerRow.eachCell((cell) => {
-      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FF007ACC' },
-      };
-      cell.alignment = { horizontal: 'center', vertical: 'middle' };
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' },
-      };
-    });
+    const addSection = (
+      startCol: 'A' | 'E',
+      title: string,
+      data: [string, any][],
+    ) => {
+      worksheet.getCell(`${startCol}${currentRow}`).value = title;
+      worksheet.getCell(`${startCol}${currentRow}`).font = { bold: true };
+      currentRow++;
 
-    // Dados do histórico na linha 3
-    const formatted = [
-      new Date(history.startedAt).toLocaleDateString('pt-BR'),
-      history.driver?.name || 'Desconhecido',
-      history.vehicle?.plate || '-',
-      history.path?.origin || '-',
-      history.path?.destination || '-',
-      history.elapsedDistance ?? '-',
-      this.translateStatus(history.approval?.status),
-    ];
-    worksheet.addRow(formatted);
+      data.forEach(([label, value]) => {
+        worksheet.getCell(`${startCol}${currentRow}`).value = label;
+        worksheet.getCell(
+          String.fromCharCode(startCol.charCodeAt(0) + 1) + `${currentRow}`,
+        ).value = value;
+        currentRow++;
+      });
 
-    // Definindo larguras das colunas
-    worksheet.columns = [
-      { width: 15 }, // Data
-      { width: 25 }, // Motorista
-      { width: 15 }, // Placa
-      { width: 20 }, // Origem
-      { width: 20 }, // Destino
-      { width: 15 }, // Distância
-      { width: 15 }, // Status
-    ];
+      currentRow++; // espaço extra entre seções
+    };
 
-    // Estilo das demais linhas
+    // Seções coluna esquerda
+    currentRow = 4;
+    addSection('A', 'Dados do Motorista', [
+      ['Nome', history.driver?.name || '-'],
+      ['CNH', history.driver?.cnh || '-'],
+      ['CPF', history.driver?.cpf || '-'],
+    ]);
+
+    addSection('A', 'Dados da Rota', [
+      ['Origem', history.route?.path?.origin || '-'],
+      ['Destino', history.route?.path?.destination || '-'],
+      ['Paradas', history.route?.path?.stops?.join(', ') || '-'],
+      ['Distância Estimada', history.route?.estimatedDistance || '-'],
+      ['Duração Estimada', history.route?.estimatedDuration || '-'],
+    ]);
+
+    addSection('A', 'Dados da Viagem', [
+      ['Início', new Date(history.startedAt).toLocaleString('pt-BR')],
+      ['Fim', new Date(history.endedAt).toLocaleString('pt-BR')],
+      ['Odômetro Inicial', history.odometerInitial ?? '-'],
+      ['Odômetro Final', history.odometerFinal ?? '-'],
+    ]);
+
+    // Seções coluna direita
+    currentRow = 4;
+    addSection('E', 'Dados do Veículo', [
+      ['Placa', history.vehicle?.plate || '-'],
+      ['Modelo', history.vehicle?.model || '-'],
+      ['Tipo', history.vehicle?.type || '-'],
+      ['Capacidade', history.vehicle?.capacity || '-'],
+    ]);
+
+    /* currentRow = 5;
+    //addSection('F', 'Imagens do Odometro', [
+      
+    ]); */
+
+    addSection('E', 'Aprovação', [
+      ['Status', this.translateStatus(history.approval?.status)],
+      ['Aprovado por', history.approval?.approvedBy?.name || '-'],
+      [
+        'Data',
+        history.approval?.date
+          ? new Date(history.approval.date).toLocaleString('pt-BR')
+          : '-',
+      ],
+      ['Observações', history.approval?.observation || '-'],
+    ]);
+
+    // Ajusta larguras
+    worksheet.getColumn('A').width = 20;
+    worksheet.getColumn('B').width = 30;
+    worksheet.getColumn('C').width = 5;
+    worksheet.getColumn('D').width = 5;
+    worksheet.getColumn('E').width = 20;
+    worksheet.getColumn('F').width = 30;
+
+    // Aplica bordas em toda a área preenchida
     worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 1) {
-        row.alignment = {
-          vertical: 'middle',
-          horizontal: 'center',
-          wrapText: true,
-        };
-      } else {
-        row.height = 22;
-        row.alignment = { vertical: 'middle', wrapText: true };
-        row.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
-        };
-      }
+      row.eachCell((cell) => {
+        if (rowNumber > 2) {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+          cell.alignment = { vertical: 'middle', wrapText: true };
+        }
+      });
     });
 
-    // Congela até a linha 2
-    worksheet.views = [{ state: 'frozen', ySplit: 2 }];
+    worksheet.views = [{ state: 'frozen', ySplit: 3 }];
 
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
   }
 
-  // Carrega imagem remota e retorna ID
   private async loadImageFromUrl(
     workbook: ExcelJS.Workbook,
     url: string,

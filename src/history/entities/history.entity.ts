@@ -29,7 +29,7 @@ export class History {
   })
   approval: HistoryApproval;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', nullable: true })
   elapsedDistance: number;
 
   @Column({ type: 'varchar', nullable: true })
