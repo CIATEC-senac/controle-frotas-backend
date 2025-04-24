@@ -1,13 +1,17 @@
-import { Controller, Get, Param, Render, StreamableFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Param,
+  Render,
+  StreamableFile,
+} from '@nestjs/common';
 import { Buffer } from 'buffer';
 import * as dayjs from 'dayjs';
 
-import { Roles } from 'src/auth/roles.decorator';
 import { HistoryService } from 'src/history/history.service';
-import { UserRole } from 'src/user/entities/user.entity';
 import { PdfService } from './pdf.service';
 
-// @UseGuards(AuthGuard, RolesGuard)
 @Controller('pdf')
 export class PdfController {
   constructor(
@@ -15,15 +19,15 @@ export class PdfController {
     private readonly historyService: HistoryService,
   ) {}
 
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @Get(':id')
+  @Header('Content-Type', 'application/pdf')
+  @Header('Content-Disposition', 'attachment; filename=relatorio.pdf')
   async printPDF(@Param('id') id: string) {
     const url = `http://localhost:3000/pdf/print/${id}`;
     const data = await this.pdfService.generatePdf(url);
     return new StreamableFile(Buffer.from(data));
   }
 
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @Get('print/:id')
   @Render('templates/route') // Certifique-se que esse template existe!
   async renderPDF(@Param('id') id: string) {

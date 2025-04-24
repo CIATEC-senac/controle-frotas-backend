@@ -1,13 +1,8 @@
-import { Controller, Get, Param, Res, UseGuards, Header } from '@nestjs/common';
+import { Controller, Get, Header, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { ExcelService } from './excel.service';
 import { HistoryService } from 'src/history/history.service';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/user/entities/user.entity';
+import { ExcelService } from './excel.service';
 
-@UseGuards(AuthGuard, RolesGuard)
 @Controller('excel')
 export class ExcelController {
   constructor(
@@ -15,7 +10,6 @@ export class ExcelController {
     private readonly historyService: HistoryService,
   ) {}
 
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @Get(':id')
   @Header(
     'Content-Type',
