@@ -16,6 +16,7 @@ import { Notification } from './notifications/entities/notification.entity';
 import { PdfModule } from './pdf/pdf.module';
 import { Route } from './route/entities/route.entity';
 import { RouteModule } from './route/route.module';
+import { StatsModule } from './stats/stats.module';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { Vehicle } from './vehicle/entities/vehicle.entity';
@@ -53,6 +54,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
     EnterpriseModule,
     PdfModule,
     ExcelModule,
+    StatsModule,
   ],
 })
 export class AppModule {
