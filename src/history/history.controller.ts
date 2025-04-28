@@ -138,13 +138,13 @@ export class HistoryController {
     }
   }
 
-  @Post('ongoing/unplanned-stop')
+  @Post(':id/unplanned-stop')
   @Roles(UserRole.DRIVER)
   async addUnplannedStop(
     @Body() dto: UnplannedStopDTO,
-    @Req() req: Request & { user: RequestUser },
+    @Param('id') id: number,
   ) {
-    return this.service.addUnplannedStop(req.user.sub, dto);
+    return this.service.addUnplannedStop(id, dto.coordinates, dto.type);
   }
 
   // Rota para atualizar localização

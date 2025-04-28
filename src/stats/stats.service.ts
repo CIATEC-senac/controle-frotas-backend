@@ -79,7 +79,7 @@ export class StatsService {
     const from = dayjs().startOf('day').toDate();
 
     const query = `
-      SELECT h.id AS "route",
+      SELECT h."routeId" AS "route",
         u.name AS "driver",
         sum(h."odometerFinal" - h."odometerInitial") AS "distance",
         EXTRACT(EPOCH FROM(h."endedAt" - h."startedAt")) / 60 AS "duration"
@@ -126,7 +126,7 @@ export class StatsService {
       FROM history h
       JOIN "user" u ON h."driverId" = u.id
       WHERE h."endedAt" BETWEEN $2 AND $3
-      GROUP BY h."driverId", u.name, h."endedAt") t
+      GROUP BY h."driverId", u.name, date(date_trunc($1, h."endedAt"))) t
       GROUP BY "date"
       ORDER BY "date"
       `;

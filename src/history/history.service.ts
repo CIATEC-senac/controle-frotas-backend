@@ -9,11 +9,13 @@ import { UserService } from 'src/user/user.service';
 import { DouglasPeuckerService } from './douglas-peucker.service';
 import { HistoryApprovalDTO } from './dto/history-approval.dto';
 import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
-import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
 import { HistoryApproval } from './entities/history-approval.entity';
 import { HistoryTrack } from './entities/history-track.entity';
 import { History } from './entities/history.entity';
-import { UnplannedStop } from './entities/unplanned-stop.entity';
+import {
+  UnplannedStop,
+  UnplannedStopType,
+} from './entities/unplanned-stop.entity';
 import { completeSelect } from './select-options';
 
 const leftPad = (str: string, length: number, complete: string) => {
@@ -238,23 +240,20 @@ export class HistoryService {
     });
   }
 
-  async addUnplannedStop(driverId: number, unplannedStop: UnplannedStopDTO) {
-    if (unplannedStop.history?.id != undefined) {
-      return this.uStopRepository.save(unplannedStop.toEntity());
-    }
+  async addUnplannedStop(
+    id: number,
+    coordinate: Coordinate,
+    type: UnplannedStopType,
+  ) {
+    const entity = new UnplannedStop();
+    entity.coordinates = coordinate;
+    entity.type = type;
+    entity.date = new Date();
 
-    return this.historyRepository
-      .findOne({
-        select: { id: true },
-        where: {
-          driver: { id: driverId },
-          endedAt: IsNull(),
-        },
-      })
-      .then((history) => {
-        unplannedStop.history = history;
-        return this.uStopRepository.save(unplannedStop.toEntity());
-      });
+    entity.history = new History();
+    entity.history.id = id;
+
+    return this.uStopRepository.save(entity);
   }
 
   async trackHistory(coordinate: Coordinate, history: number) {
