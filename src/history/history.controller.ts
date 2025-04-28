@@ -19,9 +19,10 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { GcsService } from 'src/infrastructure/gcp/gcs';
 import { UserDTO } from 'src/user/dtos/user.dto';
 import { User, UserRole } from 'src/user/entities/user.entity';
-import { HistoryApprovalDTO } from './dto/history.approval.dto';
+import { HistoryApprovalDTO } from './dto/history-approval.dto';
+import { HistoryTrackDTO } from './dto/history-track.dto';
+import { HistoryUploadDTO } from './dto/history-upload.dto';
 import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
-import { HistoryUploadDTO } from './dto/history.upload.dto';
 import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
 import { History } from './entities/history.entity';
 import { HistoryService } from './history.service';
@@ -140,9 +141,16 @@ export class HistoryController {
   @Post('ongoing/unplanned-stop')
   @Roles(UserRole.DRIVER)
   async addUnplannedStop(
-    @Body() unplannedStop: UnplannedStopDTO,
+    @Body() dto: UnplannedStopDTO,
     @Req() req: Request & { user: RequestUser },
   ) {
-    return this.service.addUnplannedStop(req.user.sub, unplannedStop);
+    return this.service.addUnplannedStop(req.user.sub, dto);
+  }
+
+  // Rota para atualizar localização
+  @Post(':id/tracking')
+  @Roles(UserRole.DRIVER)
+  async trackHistory(@Param('id') id: number, @Body() dto: HistoryTrackDTO) {
+    return this.service.trackHistory(dto.coordinate, id);
   }
 }

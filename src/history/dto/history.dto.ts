@@ -6,20 +6,20 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Route } from 'src/route/entities/route.entity';
+import { Coordinate, Route } from 'src/route/entities/route.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Vehicle } from 'src/vehicle/entities/vehicle.entity';
-import { Coordinates, History } from '../entities/history.entity';
+import { History } from '../entities/history.entity';
 
 export class PathCoordinatesDTO {
   @IsOptional()
-  origin: Coordinates;
+  origin: Coordinate;
 
   @IsOptional()
-  destination: Coordinates;
+  destination: Coordinate;
 
   @IsOptional()
-  stops: Coordinates[];
+  stops: Coordinate[];
 }
 
 export class PathDTO {
@@ -115,11 +115,6 @@ export class UpdateHistoryDTO {
 
     if (this.imgOdometerFinal != null)
       history.imgOdometerFinal = this.imgOdometerFinal;
-
-    if (this.pathCoordinates != null)
-      history.pathCoordinates = this.pathCoordinates;
-
-    if (this.path != null) history.path = this.path;
 
     if (this.startedAt != null) history.startedAt = this.startedAt;
 

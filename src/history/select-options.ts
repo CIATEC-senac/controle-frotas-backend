@@ -9,12 +9,12 @@ export const completeSelect: FindOptionsSelect<History> = {
   odometerFinal: true,
   imgOdometerInitial: true,
   imgOdometerFinal: true,
-  pathCoordinates: {
-    origin: coordinate,
-    destination: coordinate,
-    stops: true,
+  track: {
+    coordinate: {
+      lat: true,
+      lng: true,
+    },
   },
-  path: { origin: true, destination: true, stops: true },
   startedAt: true,
   endedAt: true,
   route: {

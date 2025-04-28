@@ -4,11 +4,14 @@ import { Between, FindOptionsWhere, IsNull, Repository } from 'typeorm';
 
 import { CreateNotificationDTO } from 'src/notifications/dto/notification.dto';
 import { NotificationService } from 'src/notifications/notification.service';
+import { Coordinate } from 'src/route/entities/route.entity';
 import { UserService } from 'src/user/user.service';
-import { HistoryApprovalDTO } from './dto/history.approval.dto';
+import { DouglasPeuckerService } from './douglas-peucker.service';
+import { HistoryApprovalDTO } from './dto/history-approval.dto';
 import { CreateHistoryDTO, UpdateHistoryDTO } from './dto/history.dto';
 import { UnplannedStopDTO } from './dto/unplanned-stop.dto';
 import { HistoryApproval } from './entities/history-approval.entity';
+import { HistoryTrack } from './entities/history-track.entity';
 import { History } from './entities/history.entity';
 import { UnplannedStop } from './entities/unplanned-stop.entity';
 import { completeSelect } from './select-options';
@@ -32,8 +35,12 @@ export class HistoryService {
     private readonly approvalRepository: Repository<HistoryApproval>,
     @InjectRepository(UnplannedStop)
     private readonly uStopRepository: Repository<UnplannedStop>,
+    @InjectRepository(HistoryTrack)
+    private readonly trackRepository: Repository<HistoryTrack>,
+
     private readonly notificationService: NotificationService,
     private readonly userService: UserService,
+    private readonly peuckerService: DouglasPeuckerService,
   ) {}
 
   /**
@@ -55,6 +62,7 @@ export class HistoryService {
         route: true,
         vehicle: true,
         approval: { approvedBy: true },
+        track: true,
       },
       order: {
         startedAt: 'DESC',
@@ -72,6 +80,7 @@ export class HistoryService {
         route: true,
         vehicle: true,
         approval: { approvedBy: true },
+        track: true,
       },
     });
   }
@@ -118,6 +127,7 @@ export class HistoryService {
         route: true,
         vehicle: true,
         approval: { approvedBy: true },
+        track: true,
       },
     });
   }
@@ -132,6 +142,7 @@ export class HistoryService {
         route: true,
         approval: { approvedBy: true },
         unplannedStops: true,
+        track: true,
       },
     });
 
@@ -149,6 +160,12 @@ export class HistoryService {
 
     history.imgOdometerInitial = getFullUrl(history.imgOdometerInitial);
     history.imgOdometerFinal = getFullUrl(history.imgOdometerFinal);
+    history.track = this.peuckerService
+      .douglasPeucker(
+        history.track.map((track) => track.coordinate),
+        50.0,
+      )
+      .map((coordinate) => ({ coordinate }) as HistoryTrack);
 
     return history;
   }
@@ -237,5 +254,14 @@ export class HistoryService {
         unplannedStop.history = history;
         return this.uStopRepository.save(unplannedStop.toEntity());
       });
+  }
+
+  async trackHistory(coordinate: Coordinate, history: number) {
+    const entity = new HistoryTrack();
+    entity.coordinate = coordinate;
+    entity.history = new History();
+    entity.history.id = history;
+
+    return this.trackRepository.save(entity);
   }
 }
