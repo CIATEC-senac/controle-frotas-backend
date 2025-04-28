@@ -8,13 +8,14 @@ services:
     build:
       context: ./
       dockerfile: ./dockerfile
-    resources:
-      limits:
-        cpus: '1.0'
-        memory: 512M
-      reservations:
-        cpus: '0.5'
-        memory: 256M
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
     volumes:
       - ./:/home/node/app/
       - node_modules:/home/node/app/node_modules
