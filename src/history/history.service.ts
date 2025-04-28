@@ -62,6 +62,7 @@ export class HistoryService {
         route: true,
         vehicle: true,
         approval: { approvedBy: true },
+        unplannedStops: true,
         track: true,
       },
       order: {
