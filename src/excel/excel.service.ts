@@ -30,14 +30,20 @@ export class ExcelService {
       alignment: { vertical: 'middle', horizontal: 'center' },
     };
 
-    const sectionTitleStyle = {
+    const tableHeaderStyle = {
       font: { bold: true, color: { argb: 'FFFFFFFF' } },
       fill: {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: 'FF4472C4' },
       },
-      alignment: { vertical: 'middle', horizontal: 'left' },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      border: {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      },
     };
 
     const borderStyle: Partial<ExcelJS.Borders> = {
@@ -47,20 +53,38 @@ export class ExcelService {
       right: { style: 'thin' },
     };
 
-    // Definindo largura das colunas
+    // Definindo largura das colunas (A-T)
     worksheet.columns = [
-      { width: 25 }, // Coluna A
-      { width: 70 }, // Coluna B
+      { width: 25 }, // A - Nome (motorista)
+      { width: 15 }, // B - Matrícula
+      { width: 15 }, // C - CNH
+      { width: 15 }, // D - Placa
+      { width: 20 }, // E - Modelo
+      { width: 20 }, // F - Origem
+      { width: 20 }, // G - Destino
+      { width: 20 }, // H - Paradas Realizadas
+      { width: 20 }, // I - Distância Estimada
+      { width: 20 }, // J - Duração Estimada
+      { width: 20 }, // K - Início
+      { width: 20 }, // L - Fim
+      { width: 20 }, // M - Odômetro Inicial
+      { width: 20 }, // N - Odômetro Final
+      { width: 20 }, // O - Tempo Estimado
+      { width: 20 }, // P - Distância Total
+      { width: 20 }, // Q - Velocidade Média
+      { width: 20 }, // R - Aprovado por
+      { width: 20 }, // S - Data da Aprovação
+      { width: 30 }, // T - Observações
     ];
 
     // Cabeçalho principal
-    worksheet.mergeCells('A1:B1');
+    worksheet.mergeCells('A1:T1');
     worksheet.getCell('A1').value = `RELATÓRIO DA ROTA #${history.id}`;
     Object.assign(worksheet.getCell('A1'), headerStyle);
     worksheet.getRow(1).height = 30;
 
     // Linha de geração
-    worksheet.mergeCells('A2:B2');
+    worksheet.mergeCells('A2:T2');
     worksheet.getCell('A2').value =
       `Gerado em ${new Date().toLocaleString('pt-BR')} por ${generatedBy}`;
     worksheet.getCell('A2').alignment = {
@@ -78,145 +102,104 @@ export class ExcelService {
       ext: { width: 100, height: 50 },
     });
 
-    let currentRow = 4;
+    // Cabeçalhos das colunas (linha 4)
+    const headersRow = worksheet.getRow(4);
+    const headers = [
+      'Nome (motorista)', // A
+      'Matrícula', // B
+      'CNH', // C
+      'Placa', // D
+      'Modelo', // E
+      'Origem', // F
+      'Destino', // G
+      'Paradas Realizadas', // H
+      'Distância Estimada', // I
+      'Duração Estimada', // J
+      'Início', // K
+      'Fim', // L
+      'Odômetro Inicial', // M
+      'Odômetro Final', // N
+      'Tempo Estimado', // O
+      'Distância Total', // P
+      'Velocidade Média', // Q
+      'Aprovado por', // R
+      'Data da Aprovação', // S
+      'Observações', // T
+    ];
 
-    // Função auxiliar para criar seção
-    const createSection = (title: string) => {
-      worksheet.mergeCells(`A${currentRow}:B${currentRow}`);
-      worksheet.getCell(`A${currentRow}`).value = title;
-      Object.assign(worksheet.getCell(`A${currentRow}`), sectionTitleStyle);
-      worksheet.getRow(currentRow).height = 20;
-      currentRow++;
-    };
+    headers.forEach((header, index) => {
+      const cell = headersRow.getCell(index + 1);
+      cell.value = header;
+      Object.assign(cell, tableHeaderStyle);
+    });
 
-    // Função auxiliar para adicionar linha de dados
-    const addRow = (label: string, value: any) => {
-      worksheet.getCell(`A${currentRow}`).value = label;
-      worksheet.getCell(`B${currentRow}`).value = value ?? '-';
-
-      worksheet.getCell(`A${currentRow}`).border = borderStyle;
-      worksheet.getCell(`B${currentRow}`).border = borderStyle;
-
-      worksheet.getCell(`A${currentRow}`).alignment = {
-        vertical: 'middle',
-        horizontal: 'left',
-      };
-      worksheet.getCell(`B${currentRow}`).alignment = {
-        vertical: 'middle',
-        horizontal: 'left',
-      };
-
-      currentRow++;
-    };
-
-    // Dados do Motorista
-    createSection('DADOS DO MOTORISTA');
-    addRow('Nome', history.driver?.name);
-    addRow('Matrícula', history.driver?.registration);
-    addRow('CNH', history.driver?.cnh);
-    addRow('CPF', history.driver?.cpf);
-
-    worksheet.addRow([]);
-    currentRow++;
-
-    // Dados do Veículo
-    createSection('DADOS DO VEÍCULO');
-    addRow('Placa', history.vehicle?.plate);
-    addRow('Modelo', history.vehicle?.model);
-    addRow('Tipo', history.vehicle?.type);
-    addRow('Capacidade', history.vehicle?.capacity);
-
-    worksheet.addRow([]);
-    currentRow++;
-
-    // Dados da Rota
-    createSection('DADOS DA ROTA');
-    addRow('Origem', history.route?.path?.origin);
-    addRow('Destino', history.route?.path?.destination);
-
-    // Tratamento especial para as paradas
-    if (history.route?.path?.stops?.length) {
-      worksheet.getCell(`A${currentRow}`).value = 'Paradas';
-      worksheet.getCell(`A${currentRow}`).border = borderStyle;
-      worksheet.getCell(`A${currentRow}`).alignment = {
-        vertical: 'middle',
-        horizontal: 'left',
-      };
-
-      // Adiciona cada parada em uma linha separada na coluna B
-      let firstStop = true;
-      for (const stop of history.route.path.stops) {
-        if (!firstStop) {
-          currentRow++;
-        }
-        worksheet.getCell(`B${currentRow}`).value = stop;
-        worksheet.getCell(`B${currentRow}`).border = borderStyle;
-        worksheet.getCell(`B${currentRow}`).alignment = {
-          vertical: 'middle',
-          horizontal: 'left',
-        };
-        firstStop = false;
-      }
-      currentRow++;
-    } else {
-      addRow('Paradas', '-');
-    }
-
-    addRow('Distância Estimada', history.route?.estimatedDistance);
-    addRow('Duração Estimada', history.route?.estimatedDuration);
-
-    worksheet.addRow([]);
-    currentRow++;
-
-    // Dados da Viagem
-    createSection('DADOS DA VIAGEM');
-    addRow(
-      'Início',
-      history.startedAt
-        ? new Date(history.startedAt).toLocaleString('pt-BR')
-        : '-',
-    );
-    addRow(
-      'Fim',
-      history.endedAt ? new Date(history.endedAt).toLocaleString('pt-BR') : '-',
-    );
-    addRow('Odômetro Inicial', history.odometerInitial);
-    addRow('Odômetro Final', history.odometerFinal);
-
-    worksheet.addRow([]);
-    currentRow++;
-
-    // Estatísticas da Rota
+    // Preenchendo os dados (linha 5)
+    const dataRow = worksheet.getRow(5);
     const routeStats = await this.routeService.getRouteStatistics(
       history.route.id,
     );
 
-    createSection('ESTATÍSTICAS DA ROTA');
-    addRow('Tempo Estimado', routeStats?.durationMin);
-    addRow('Distância Total', routeStats?.distanceKm);
-    addRow('Paradas Realizadas', routeStats?.stopsCount);
-    addRow('Velocidade Média', routeStats?.averageSpeedKmH);
+    // Dados básicos
+    dataRow.getCell(1).value = history.driver?.name || '-'; // Nome
+    dataRow.getCell(2).value = history.driver?.registration || '-'; // Matrícula
+    dataRow.getCell(3).value = history.driver?.cnh || '-'; // CNH
+    dataRow.getCell(4).value = history.vehicle?.plate || '-'; // Placa
+    dataRow.getCell(5).value = history.vehicle?.model || '-'; // Modelo
+    dataRow.getCell(6).value = history.route?.path?.origin || '-'; // Origem
+    dataRow.getCell(7).value = history.route?.path?.destination || '-'; // Destino
 
-    worksheet.addRow([]);
-    currentRow++;
+    // Paradas
+    if (history.route?.path?.stops?.length) {
+      dataRow.getCell(8).value = history.route.path.stops.join(', ');
+    } else {
+      dataRow.getCell(8).value = '-';
+    }
 
-    // Dados de Aprovação
-    createSection('DADOS DE APROVAÇÃO');
-    addRow('Aprovado por', history.approval?.approvedBy?.name);
-    addRow(
-      'Data da Aprovação',
-      history.approval?.date
-        ? new Date(history.approval.date).toLocaleString('pt-BR')
-        : '-',
-    );
-    addRow('Observações', history.approval?.observation);
+    // Dados da rota
+    dataRow.getCell(9).value = history.route?.estimatedDistance || '-'; // Distância Estimada
+    dataRow.getCell(10).value = history.route?.estimatedDuration || '-'; // Duração Estimada
+
+    // Dados da viagem
+    dataRow.getCell(11).value = history.startedAt
+      ? new Date(history.startedAt).toLocaleString('pt-BR')
+      : '-'; // Início
+    dataRow.getCell(12).value = history.endedAt
+      ? new Date(history.endedAt).toLocaleString('pt-BR')
+      : '-'; // Fim
+    dataRow.getCell(13).value = history.odometerInitial || '-'; // Odômetro Inicial
+    dataRow.getCell(14).value = history.odometerFinal || '-'; // Odômetro Final
+
+    // Estatísticas
+    dataRow.getCell(15).value = routeStats?.durationMin || '-'; // Tempo Estimado
+    dataRow.getCell(16).value = routeStats?.distanceKm || '-'; // Distância Total
+    dataRow.getCell(17).value = routeStats?.averageSpeedKmH || '-'; // Velocidade Média
+
+    // Aprovação
+    dataRow.getCell(18).value = history.approval?.approvedBy?.name || '-'; // Aprovado por
+    dataRow.getCell(19).value = history.approval?.date
+      ? new Date(history.approval.date).toLocaleString('pt-BR')
+      : '-'; // Data da Aprovação
+    dataRow.getCell(20).value = history.approval?.observation || '-'; // Observações
+
+    // Aplicando bordas a todas as células de dados
+    for (let i = 1; i <= 20; i++) {
+      dataRow.getCell(i).border = borderStyle;
+    }
+
+    // Adicionando linhas vazias conforme mostrado na imagem (linhas 6-22)
+    for (let i = 6; i <= 22; i++) {
+      const emptyRow = worksheet.getRow(i);
+      for (let j = 1; j <= 20; j++) {
+        emptyRow.getCell(j).value = '';
+        emptyRow.getCell(j).border = borderStyle;
+      }
+    }
 
     // Exporta o arquivo
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
   }
 
-  // Função para carregar imagem via URL
   private async loadImageFromUrl(
     workbook: ExcelJS.Workbook,
     url: string,
