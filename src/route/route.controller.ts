@@ -99,4 +99,19 @@ export class RouteController {
       res.status(HttpStatus.BAD_REQUEST).send(e.message);
     }
   }
+
+  // Recebe as estatisticas da rota
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Get(':id/statistics')
+  async getStatistics(
+    @Param('id') id: number,
+    @Res() res: Response,
+  ): Promise<Response<any>> {
+    try {
+      const stats = await this.service.getRouteStatistics(id);
+      return res.status(HttpStatus.OK).json(stats);
+    } catch (e) {
+      return res.status(HttpStatus.NOT_FOUND).send(e.message);
+    }
+  }
 }

@@ -152,4 +152,21 @@ export class RouteService {
       relations: ['driver', 'vehicle'],
     });
   }
+
+  // Retorna as estatísticas de uma rota específica
+  async getRouteStatistics(id: number) {
+    const route = await this.findOneById(id);
+    if (!route) throw new Error('Route not found');
+
+    const distanceKm = route.estimatedDistance / 1000;
+    const durationMin = route.estimatedDuration / 60;
+    const averageSpeed = distanceKm / (route.estimatedDuration / 3600);
+
+    return {
+      stopsCount: route.path.stops.length,
+      distanceKm: parseFloat(distanceKm.toFixed(2)),
+      durationMin: parseFloat(durationMin.toFixed(2)),
+      averageSpeedKmH: parseFloat(averageSpeed.toFixed(2)),
+    };
+  }
 }

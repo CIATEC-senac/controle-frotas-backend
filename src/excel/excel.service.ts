@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { History } from 'src/history/entities/history.entity';
 import { Buffer } from 'buffer';
 import axios from 'axios';
+import { RouteService } from 'src/route/route.service';
 
 @Injectable()
 export class ExcelService {
+  constructor(
+    @Inject(forwardRef(() => RouteService))
+    private readonly routeService: RouteService,
+  ) {}
+
   async generateExcel(
     history: History,
     generatedBy = 'Sistema',
@@ -13,128 +19,183 @@ export class ExcelService {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Relatório de Rota');
 
-    worksheet.mergeCells('A1:F1');
-    worksheet.getCell('A1').value = `Relatório da Rota #${history.id}`;
-    worksheet.getCell('A1').font = { size: 16, bold: true };
-    worksheet.getCell('A1').alignment = {
-      vertical: 'middle',
-      horizontal: 'center',
+    // Estilos básicos
+    const headerStyle = {
+      font: { size: 16, bold: true, color: { argb: '000000' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFF' },
+      },
+      alignment: { vertical: 'middle', horizontal: 'center' },
     };
-    worksheet.getRow(1).height = 40;
 
-    worksheet.mergeCells('A2:F2');
+    const tableHeaderStyle = {
+      font: { bold: true, color: { argb: 'FFFFFFFF' } },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF4472C4' },
+      },
+      alignment: { vertical: 'middle', horizontal: 'center' },
+      border: {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      },
+    };
+
+    const borderStyle: Partial<ExcelJS.Borders> = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+
+    // Definindo largura das colunas (A-T)
+    worksheet.columns = [
+      { width: 25 }, // A - Nome (motorista)
+      { width: 15 }, // B - Matrícula
+      { width: 15 }, // C - CNH
+      { width: 15 }, // D - Placa
+      { width: 20 }, // E - Modelo
+      { width: 20 }, // F - Origem
+      { width: 20 }, // G - Destino
+      { width: 20 }, // H - Paradas Realizadas
+      { width: 20 }, // I - Distância Estimada
+      { width: 20 }, // J - Duração Estimada
+      { width: 20 }, // K - Início
+      { width: 20 }, // L - Fim
+      { width: 20 }, // M - Odômetro Inicial
+      { width: 20 }, // N - Odômetro Final
+      { width: 20 }, // O - Tempo Estimado
+      { width: 20 }, // P - Distância Total
+      { width: 20 }, // Q - Velocidade Média
+      { width: 20 }, // R - Aprovado por
+      { width: 20 }, // S - Data da Aprovação
+      { width: 30 }, // T - Observações
+    ];
+
+    // Cabeçalho principal
+    worksheet.mergeCells('A1:T1');
+    worksheet.getCell('A1').value = `RELATÓRIO DA ROTA #${history.id}`;
+    Object.assign(worksheet.getCell('A1'), headerStyle);
+    worksheet.getRow(1).height = 30;
+
+    // Linha de geração
+    worksheet.mergeCells('A2:T2');
     worksheet.getCell('A2').value =
       `Gerado em ${new Date().toLocaleString('pt-BR')} por ${generatedBy}`;
-    worksheet.getCell('A2').font = { italic: true, size: 10 };
     worksheet.getCell('A2').alignment = {
       vertical: 'middle',
       horizontal: 'center',
     };
+    worksheet.getCell('A2').font = { italic: true, size: 10 };
 
+    // Logo
     const logoUrl =
       'https://static.wixstatic.com/media/f19bb9_c7bbcca3a3684546bb14455c45edff18~mv2.png/v1/fill/w_260,h_122,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LOGO.png';
     const logoImageId = await this.loadImageFromUrl(workbook, logoUrl);
     worksheet.addImage(logoImageId, {
-      tl: { col: 5.5, row: 0 },
-      ext: { width: 120, height: 60 },
+      tl: { col: 0, row: 0 },
+      ext: { width: 100, height: 50 },
     });
 
-    let currentRow = 4;
+    // Cabeçalhos das colunas (linha 4)
+    const headersRow = worksheet.getRow(4);
+    const headers = [
+      'Nome (motorista)', // A
+      'Matrícula', // B
+      'CNH', // C
+      'Placa', // D
+      'Modelo', // E
+      'Origem', // F
+      'Destino', // G
+      'Paradas Realizadas', // H
+      'Distância Estimada', // I
+      'Duração Estimada', // J
+      'Início', // K
+      'Fim', // L
+      'Odômetro Inicial', // M
+      'Odômetro Final', // N
+      'Tempo Estimado', // O
+      'Distância Total', // P
+      'Velocidade Média', // Q
+      'Aprovado por', // R
+      'Data da Aprovação', // S
+      'Observações', // T
+    ];
 
-    const addSection = (
-      startCol: 'A' | 'E',
-      title: string,
-      data: [string, any][],
-    ) => {
-      worksheet.getCell(`${startCol}${currentRow}`).value = title;
-      worksheet.getCell(`${startCol}${currentRow}`).font = { bold: true };
-      currentRow++;
-
-      data.forEach(([label, value]) => {
-        worksheet.getCell(`${startCol}${currentRow}`).value = label;
-        worksheet.getCell(
-          String.fromCharCode(startCol.charCodeAt(0) + 1) + `${currentRow}`,
-        ).value = value;
-        currentRow++;
-      });
-
-      currentRow++; // espaço extra entre seções
-    };
-
-    // Seções coluna esquerda
-    currentRow = 4;
-    addSection('A', 'Dados do Motorista', [
-      ['Nome', history.driver?.name || '-'],
-      ['CNH', history.driver?.cnh || '-'],
-      ['CPF', history.driver?.cpf || '-'],
-    ]);
-
-    addSection('A', 'Dados da Rota', [
-      ['Origem', history.route?.path?.origin || '-'],
-      ['Destino', history.route?.path?.destination || '-'],
-      ['Paradas', history.route?.path?.stops?.join(', ') || '-'],
-      ['Distância Estimada', history.route?.estimatedDistance || '-'],
-      ['Duração Estimada', history.route?.estimatedDuration || '-'],
-    ]);
-
-    addSection('A', 'Dados da Viagem', [
-      ['Início', new Date(history.startedAt).toLocaleString('pt-BR')],
-      ['Fim', new Date(history.endedAt).toLocaleString('pt-BR')],
-      ['Odômetro Inicial', history.odometerInitial ?? '-'],
-      ['Odômetro Final', history.odometerFinal ?? '-'],
-    ]);
-
-    // Seções coluna direita
-    currentRow = 4;
-    addSection('E', 'Dados do Veículo', [
-      ['Placa', history.vehicle?.plate || '-'],
-      ['Modelo', history.vehicle?.model || '-'],
-      ['Tipo', history.vehicle?.type || '-'],
-      ['Capacidade', history.vehicle?.capacity || '-'],
-    ]);
-
-    /* currentRow = 5;
-    //addSection('F', 'Imagens do Odometro', [
-      
-    ]); */
-
-    addSection('E', 'Aprovação', [
-      ['Status', this.translateStatus(history.approval?.status)],
-      ['Aprovado por', history.approval?.approvedBy?.name || '-'],
-      [
-        'Data',
-        history.approval?.date
-          ? new Date(history.approval.date).toLocaleString('pt-BR')
-          : '-',
-      ],
-      ['Observações', history.approval?.observation || '-'],
-    ]);
-
-    // Ajusta larguras
-    worksheet.getColumn('A').width = 20;
-    worksheet.getColumn('B').width = 30;
-    worksheet.getColumn('C').width = 5;
-    worksheet.getColumn('D').width = 5;
-    worksheet.getColumn('E').width = 20;
-    worksheet.getColumn('F').width = 30;
-
-    // Aplica bordas em toda a área preenchida
-    worksheet.eachRow((row, rowNumber) => {
-      row.eachCell((cell) => {
-        if (rowNumber > 2) {
-          cell.border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' },
-          };
-          cell.alignment = { vertical: 'middle', wrapText: true };
-        }
-      });
+    headers.forEach((header, index) => {
+      const cell = headersRow.getCell(index + 1);
+      cell.value = header;
+      Object.assign(cell, tableHeaderStyle);
     });
 
-    worksheet.views = [{ state: 'frozen', ySplit: 3 }];
+    // Preenchendo os dados (linha 5)
+    const dataRow = worksheet.getRow(5);
+    const routeStats = await this.routeService.getRouteStatistics(
+      history.route.id,
+    );
 
+    // Dados básicos
+    dataRow.getCell(1).value = history.driver?.name || '-'; // Nome
+    dataRow.getCell(2).value = history.driver?.registration || '-'; // Matrícula
+    dataRow.getCell(3).value = history.driver?.cnh || '-'; // CNH
+    dataRow.getCell(4).value = history.vehicle?.plate || '-'; // Placa
+    dataRow.getCell(5).value = history.vehicle?.model || '-'; // Modelo
+    dataRow.getCell(6).value = history.route?.path?.origin || '-'; // Origem
+    dataRow.getCell(7).value = history.route?.path?.destination || '-'; // Destino
+
+    // Paradas
+    if (history.route?.path?.stops?.length) {
+      dataRow.getCell(8).value = history.route.path.stops.join(', ');
+    } else {
+      dataRow.getCell(8).value = '-';
+    }
+
+    // Dados da rota
+    dataRow.getCell(9).value = history.route?.estimatedDistance || '-'; // Distância Estimada
+    dataRow.getCell(10).value = history.route?.estimatedDuration || '-'; // Duração Estimada
+
+    // Dados da viagem
+    dataRow.getCell(11).value = history.startedAt
+      ? new Date(history.startedAt).toLocaleString('pt-BR')
+      : '-'; // Início
+    dataRow.getCell(12).value = history.endedAt
+      ? new Date(history.endedAt).toLocaleString('pt-BR')
+      : '-'; // Fim
+    dataRow.getCell(13).value = history.odometerInitial || '-'; // Odômetro Inicial
+    dataRow.getCell(14).value = history.odometerFinal || '-'; // Odômetro Final
+
+    // Estatísticas
+    dataRow.getCell(15).value = routeStats?.durationMin || '-'; // Tempo Estimado
+    dataRow.getCell(16).value = routeStats?.distanceKm || '-'; // Distância Total
+    dataRow.getCell(17).value = routeStats?.averageSpeedKmH || '-'; // Velocidade Média
+
+    // Aprovação
+    dataRow.getCell(18).value = history.approval?.approvedBy?.name || '-'; // Aprovado por
+    dataRow.getCell(19).value = history.approval?.date
+      ? new Date(history.approval.date).toLocaleString('pt-BR')
+      : '-'; // Data da Aprovação
+    dataRow.getCell(20).value = history.approval?.observation || '-'; // Observações
+
+    // Aplicando bordas a todas as células de dados
+    for (let i = 1; i <= 20; i++) {
+      dataRow.getCell(i).border = borderStyle;
+    }
+
+    // Adicionando linhas vazias conforme mostrado na imagem (linhas 6-22)
+    for (let i = 6; i <= 22; i++) {
+      const emptyRow = worksheet.getRow(i);
+      for (let j = 1; j <= 20; j++) {
+        emptyRow.getCell(j).value = '';
+        emptyRow.getCell(j).border = borderStyle;
+      }
+    }
+
+    // Exporta o arquivo
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
   }
@@ -144,19 +205,9 @@ export class ExcelService {
     url: string,
   ): Promise<number> {
     const response = await axios.get(url, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(response.data);
     return workbook.addImage({
-      buffer: imageBuffer,
+      buffer: Buffer.from(response.data),
       extension: 'png',
     });
-  }
-
-  private translateStatus(status?: number) {
-    const map = {
-      0: 'Pendente',
-      1: 'Aprovado',
-      2: 'Reprovado',
-    };
-    return map[status] || 'Desconhecido';
   }
 }
