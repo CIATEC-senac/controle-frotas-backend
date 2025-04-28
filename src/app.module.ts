@@ -5,6 +5,7 @@ import { EnterpriseModule } from './enterprise/enterprise.module';
 import { Enterprise } from './enterprise/entities/enterprise.entity';
 import { ExcelModule } from './excel/excel.module';
 import { HistoryApproval } from './history/entities/history-approval.entity';
+import { HistoryTrack } from './history/entities/history-track.entity';
 import { History } from './history/entities/history.entity';
 import { UnplannedStop } from './history/entities/unplanned-stop.entity';
 import { HistoryModule } from './history/history.module';
@@ -38,6 +39,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
         Route,
         History,
         HistoryApproval,
+        HistoryTrack,
         Enterprise,
         UnplannedStop,
         Notification,

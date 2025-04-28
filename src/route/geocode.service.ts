@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Axios } from 'axios';
 import * as http from 'http';
 import * as https from 'https';
-import { Coordinates } from 'src/history/entities/history.entity';
 import { Coordinate, Route } from 'src/route/entities/route.entity';
 
 @Injectable()
@@ -82,7 +81,7 @@ export class GeoCodeService {
   public async getGoogleRoute(
     origin: string,
     destination: string,
-    waypoints: Coordinates[],
+    waypoints: Coordinate[],
   ) {
     // Formata os waypoints em uma string esperada pela API do Google
     const waypointsString = waypoints
